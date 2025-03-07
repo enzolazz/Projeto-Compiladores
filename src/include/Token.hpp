@@ -1,6 +1,7 @@
 #pragma once
+#include <string>
 
-enum class Token : short {
+enum class TokenName : short {
     PROGRAMA,
     IF,
     THEN,
@@ -9,10 +10,15 @@ enum class Token : short {
     WHILE,
     DO,
     ATTRIBUTION,
-    BLOCO_START, BLOCO_END,
+    BLOCO_START,
+    BLOCO_END,
     END_SENTENCE,
-    PAR_START, PAR_END,
-    BRACKET_START, BRACKET_END,
+    COLON,
+    COMMA,
+    PAR_START,
+    PAR_END,
+    BRACKET_START,
+    BRACKET_END,
     ID,
     NUM,
     CARACTERE,
@@ -21,4 +27,17 @@ enum class Token : short {
     OPSOMASUB,
     OPMULDIV,
     OPPOT
+};
+
+struct Token {
+    TokenName name;
+    void *attribute;
+    // union {
+    //     std::string LEX;
+    //     int INT;
+    //     short RELOP;
+    //     void *NULLPTR;
+    // } attribute;
+    int row;
+    int col;
 };

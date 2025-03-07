@@ -5,13 +5,16 @@
 #include <unordered_set>
 #include <vector>
 
+enum class Type : short { INT, FLOAT, CHAR };
+
 struct Row {
     Token token;
-    std::string lex;
-    void *valor;
-    void *tipo;
-    int row;
-    int col;
+    Type type;
+    union {
+        int INT;
+        float FLOAT;
+        char CHAR;
+    } value;
 };
 
 class Table {
@@ -23,4 +26,5 @@ class Table {
     Table();
 
     int insert(Row row);
+    void print();
 };
