@@ -1,16 +1,13 @@
-#include "../headers/Table.h"
-#include <cstdlib>
+#include "Table.hpp"
 
-
-Table::Table() {
-    count = 0;
-}
+Table::Table() = default;
 
 int Table::insert(const Row row) {
-    if (lexs.find(row.lex) != lexs.end()) return -1;
+    if (lexs.contains(row.lex))
+        return -1;
 
     rows.push_back(row);
     lexs.insert(row.lex);
 
-    return count++;
+    return rows.size();
 }

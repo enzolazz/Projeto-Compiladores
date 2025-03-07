@@ -1,31 +1,26 @@
-#ifndef HEADERS_TABLE_H_
-#define HEADERS_TABLE_H_
+#pragma once
 
-#include "Tokens.h"
+#include "Token.hpp"
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
-typedef struct {
-    Tokens token;
+struct Row {
+    Token token;
     std::string lex;
     void *valor;
     void *tipo;
     int row;
     int col;
-} Row;
-
-
-class Table {
-private:
-    int count;
-    std::vector<Row> rows;
-    std::unordered_set<std::string> lexs;
-public:
-    int insert(Row row);
-
-    Table();
 };
 
-#endif  // HEADERS_TABLE_H_
+class Table {
+ private:
+    std::vector<Row> rows;
+    std::unordered_set<std::string> lexs;
 
+ public:
+    Table();
+
+    int insert(Row row);
+};
