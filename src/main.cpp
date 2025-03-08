@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
 
     if (argc != 2) {
         cerr << "Informe o nome do arquivo a ser lido como primeiro argumento "
-                "da linah de comando."
+                "da linha de comando."
              << endl;
         return EXIT_FAILURE;
     }

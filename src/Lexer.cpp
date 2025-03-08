@@ -14,7 +14,7 @@ char Lexer::next_char() {
     char ret;
     if (next_pos == BUFFER_SIZE) {
         source.read(buffers[active_buffer], BUFFER_SIZE);
-        active_buffer ^= active_buffer;
+        active_buffer ^= 1;
         ret = buffers[active_buffer][0];
         next_pos = 1;
     } else {
@@ -27,7 +27,7 @@ char Lexer::next_char() {
 
 char Lexer::lookAhead() const noexcept {
     if (next_pos == BUFFER_SIZE)
-        return buffers[active_buffer ^ active_buffer][0];
+        return buffers[active_buffer ^ 1][0];
     else
         return buffers[active_buffer][next_pos];
 }
