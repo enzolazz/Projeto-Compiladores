@@ -94,14 +94,14 @@ std::string Token::to_string(Type type) {
 }
 
 std::string Token::to_string() const {
-    auto str = '<' + Token::to_string(type);
-    if (type >= Id::PROGRAMA && type <= Id::BRACKET_END)
+    auto str = '<' + Token::to_string(id);
+    if (id >= Id::PROGRAMA && id <= Id::BRACKET_END)
         str += '>';
-    else if (type >= Id::ID && type <= Id::CARACTERE)
+    else if (id >= Id::ID && id <= Id::CARACTERE)
         str += ", " + std::any_cast<std::string>(attribute) + '>';
-    else if (type == Id::RELOP)
+    else if (id == Id::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute)) + '>';
-    else if (type == Id::TYPE)
+    else if (id == Id::TYPE)
         str += ", " + to_string(std::any_cast<Type>(attribute)) + '>';
     else
         str += ", nao implementado>";

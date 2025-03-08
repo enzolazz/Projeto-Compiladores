@@ -39,7 +39,7 @@ struct Token {
     static std::string to_string(Type);
     std::string to_string() const;
 
-    const Id type;
+    const Id id;
     const std::any attribute;
     const int row;
     const int col;

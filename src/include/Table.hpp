@@ -2,24 +2,32 @@
 
 #include "Token.hpp"
 #include <string>
-#include <unordered_set>
+#include <unordered_map>
 #include <vector>
-
-
 
 struct Row {
     Token token;
-    void* type; // TODO necessário?
-    std::any value;
+    Token::Type coerced_id_type;
+    std::any coerced_value;
 };
 
-class Table {
+class SymbolTable {
  private:
     std::vector<Row> rows;
-    std::unordered_set<std::string> lexs;
 
  public:
-    Table();
+    using size_type = decltype(rows)::size_type;
 
-    int insert(Row row);
+ private:
+    std::unordered_map<std::string, size_type> lexeme_index;
+
+ public:
+    SymbolTable();
+
+    void insert(Row row);
+    size_type get_pos_lexeme(const std::string& lexeme) const;
+
+    const Row& operator[](size_type pos) const;
+
+    Row& operator[](size_type pos);
 };

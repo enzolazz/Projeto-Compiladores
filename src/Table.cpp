@@ -2,17 +2,24 @@
 #include "Token.hpp"
 #include <any>
 
-Table::Table() = default;
+SymbolTable::SymbolTable() = default;
 
-int Table::insert(const Row row) {
-    if (row.token.type == Token::Id::ID) {
+void SymbolTable::insert(const Row row) {
+    if (row.token.id == Token::Id::ID) {
         std::string lex = std::any_cast<std::string>(row.token.attribute);
-        if (lexs.contains(lex))
-            return -1;
-        lexs.insert(lex);
+        if (lexeme_index.contains(lex))
+            return;
+        auto index = rows.size();
+        lexeme_index[lex] = index;
     }
 
     rows.push_back(row);
-
-    return rows.size();
 }
+
+SymbolTable::size_type SymbolTable::get_pos_lexeme(const std::string &lexeme) const {
+    return lexeme_index.at(lexeme);
+}
+
+const Row &SymbolTable::operator[](size_type pos) const { return rows[pos]; }
+
+Row &SymbolTable::operator[](size_type pos) { return rows[pos]; }
