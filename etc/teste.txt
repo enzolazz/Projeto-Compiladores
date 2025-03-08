@@ -1,2 +1,3 @@
+zero := : 0, 2;
 while;
 whaaaaaaaaaaaaaaaaaab;

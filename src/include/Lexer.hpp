@@ -27,7 +27,7 @@ class Lexer {
     char look_ahead() const noexcept;
 
     using state_type = int(char, char);
-    state_type s0_white_space, s1_id_tail;
+    state_type s0_white_space, s3_colon, s90_id_tail;
 
  public:
     Lexer(std::ifstream &source);

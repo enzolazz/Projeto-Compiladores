@@ -1,6 +1,7 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
 #include "exception/LexerException.hpp"
+#include <cctype>
 #include <fstream>
 
 Lexer::Lexer(std::ifstream &source)
@@ -65,10 +66,16 @@ Token Lexer::next_token() {
         case 0:
             current_state = s0_white_space(c, la);
             break;
-        case 1:
-            current_state = s1_id_tail(c, la);
+        case 3:
+            current_state = s3_colon(c, la);
             break;
-        case 2:
+        case 5:
+            token = Token(Token::Name::ATTRIBUTION, nullptr, row, col_lex_init);
+            break;
+        case 90:
+            current_state = s90_id_tail(c, la);
+            break;
+        case 19:
             token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
             break;
         default:
@@ -94,19 +101,33 @@ int Lexer::s0_white_space(char c, char look_ahead) {
 
     // TODO Este é o primeiro estado do diagrama, após descartar os caracteres white space, fazer a transição
     // para todos outros estados fingindo que estamos lendo o primeiro caractere.
-    if ((c >= 'A' && c <= 'Z') || std::string("abgjklmnoqrsuvwxyz_").find(c) != std::string::npos)
-        return 1;
-    else if (c == ';')
-        return 2;
-    else
-        throw LexerException("Transicao ainda nao implementada", row, col, c);
+
+    switch (c) {
+    case ':':
+        return 3;
+    case ';':
+        return 19;
+    default:
+        if ((c >= 'A' && c <= 'Z') || std::string("abghjklmnoqrsuvxyz_").find(c) != std::string::npos)
+            return 90;
+    }
+
+    throw LexerException("Transicao ainda nao implementada", row, col, c);
 };
 
-int Lexer::s1_id_tail(char c, char look_ahead) {
+int Lexer::s3_colon(char c, char look_ahead) {
+    if (c == '=')
+        return 5;
+    else
+        token = Token(Token::Name::COLON, nullptr, row, col_lex_init);
+    return 3;
+}
+
+int Lexer::s90_id_tail(char c, char look_ahead) {
     if (std::isalnum(c) || c == '_') {
         if (!(std::isalnum(look_ahead) || look_ahead == '_'))
             token = Token(Token::Name::ID, lexeme, row, col_lex_init);
-        return 1;
+        return 90;
     } else
         throw LexerException("Caractere nao reconhecido", row, col, c);
 };
