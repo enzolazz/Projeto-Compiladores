@@ -1,5 +1,6 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
+#include "exception/LexerException.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -16,13 +17,7 @@ int main(int argc, char *argv[]) {
     Lexer lex(source);
 
     while (true) {
-        try {
-            Token tok = lex.next_token();
-            cout << "Token lido: " << tok.to_string() << endl;
-        } catch (int err) {
-            cerr << "Not a valid token\n"
-                 << "Error: " << err << endl;
-            return EXIT_FAILURE;
-        }
+        Token tok = lex.next_token();
+        cout << "Token lido: " << tok.to_string() << endl;
     }
 }

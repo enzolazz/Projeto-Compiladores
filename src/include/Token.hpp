@@ -4,7 +4,7 @@
 #include <string>
 
 struct Token {
-    enum class Id : short {
+    enum class Name : short {
         PROGRAMA,
         IF,
         THEN,
@@ -34,12 +34,12 @@ struct Token {
     enum class RelOp : short { LT, LE, EQ, NE, GE, GT };
     enum class Type : short { INT, FLOAT, CHAR };
 
-    static std::string to_string(Id);
+    static std::string to_string(Name);
     static std::string to_string(RelOp);
     static std::string to_string(Type);
     std::string to_string() const;
 
-    const Id id;
+    const Name id;
     const std::any attribute;
     const int row;
     const int col;

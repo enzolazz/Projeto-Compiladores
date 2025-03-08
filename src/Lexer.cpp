@@ -1,6 +1,7 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
 #include "debug.hpp"
+#include "exception/LexerException.hpp"
 #include <fstream>
 
 Lexer::Lexer(std::ifstream &source)
@@ -33,10 +34,9 @@ char Lexer::lookAhead() const noexcept {
 
 Token Lexer::next_token() {
     std::string lex;
-    bool found = false;
 
     int state = 0;
-    while (!found) {
+    while (true) {
         char c = next_char();
         lex += c;
         col++;
@@ -59,7 +59,7 @@ Token Lexer::next_token() {
             if (c == 'e') {
                 char ahead = lookAhead();
                 if (!std::isalnum(ahead) && ahead != '_')
-                    return Token(Token::Id::WHILE, nullptr, row, col);
+                    return Token(Token::Name::WHILE, nullptr, row, col);
             } else
                 state = -1;
             break;
@@ -73,13 +73,10 @@ Token Lexer::next_token() {
                 col = 0;
                 row++;
             } else {
-                db_file("Caractere inesperado", c, row, col);
-                throw 505;
+                throw LexerException("Caractere inesperado", row, col, c);
             }
         default:
             break;
         }
     }
-
-    return {}; // TODO retornar Token?
 }

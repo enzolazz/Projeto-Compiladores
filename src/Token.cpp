@@ -3,57 +3,57 @@
 #include <stdexcept>
 #include <string>
 
-std::string Token::to_string(Id type) {
+std::string Token::to_string(Name type) {
     switch (type) {
-    case Id::PROGRAMA:
+    case Name::PROGRAMA:
         return "PROGRAMA";
-    case Id::IF:
+    case Name::IF:
         return "IF";
-    case Id::THEN:
+    case Name::THEN:
         return "THEN";
-    case Id::ELSE:
+    case Name::ELSE:
         return "ELSE";
-    case Id::ELSEIF:
+    case Name::ELSEIF:
         return "ELSEIF";
-    case Id::WHILE:
+    case Name::WHILE:
         return "WHILE";
-    case Id::DO:
+    case Name::DO:
         return "DO";
-    case Id::ATTRIBUTION:
+    case Name::ATTRIBUTION:
         return "ATTRIBUTION";
-    case Id::BLOCO_START:
+    case Name::BLOCO_START:
         return "BLOCO_START";
-    case Id::BLOCO_END:
+    case Name::BLOCO_END:
         return "BLOCO_END";
-    case Id::END_SENTENCE:
+    case Name::END_SENTENCE:
         return "END_SENTENCE";
-    case Id::COLON:
+    case Name::COLON:
         return "COLON";
-    case Id::COMMA:
+    case Name::COMMA:
         return "COMMA";
-    case Id::PAR_START:
+    case Name::PAR_START:
         return "PAR_START";
-    case Id::PAR_END:
+    case Name::PAR_END:
         return "PAR_END";
-    case Id::BRACKET_START:
+    case Name::BRACKET_START:
         return "BRACKET_START";
-    case Id::BRACKET_END:
+    case Name::BRACKET_END:
         return "BRACKET_END";
-    case Id::ID:
+    case Name::ID:
         return "ID";
-    case Id::NUM:
+    case Name::NUM:
         return "NUM";
-    case Id::CARACTERE:
+    case Name::CARACTERE:
         return "CARACTERE";
-    case Id::RELOP:
+    case Name::RELOP:
         return "RELOP";
-    case Id::TYPE:
+    case Name::TYPE:
         return "TIPO";
-    case Id::OPSOMASUB:
+    case Name::OPSOMASUB:
         return "OPSOMASUB";
-    case Id::OPMULDIV:
+    case Name::OPMULDIV:
         return "OPMULDIV";
-    case Id::OPPOT:
+    case Name::OPPOT:
         return "OPPOT";
     default:
         throw std::invalid_argument("Unknown Token Id");
@@ -94,13 +94,13 @@ std::string Token::to_string(Type type) {
 
 std::string Token::to_string() const {
     auto str = '<' + Token::to_string(id);
-    if (id >= Id::PROGRAMA && id <= Id::BRACKET_END)
+    if (id >= Name::PROGRAMA && id <= Name::BRACKET_END)
         str += '>';
-    else if (id >= Id::ID && id <= Id::CARACTERE)
+    else if (id >= Name::ID && id <= Name::CARACTERE)
         str += ", " + std::any_cast<std::string>(attribute) + '>';
-    else if (id == Id::RELOP)
+    else if (id == Name::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute)) + '>';
-    else if (id == Id::TYPE)
+    else if (id == Name::TYPE)
         str += ", " + to_string(std::any_cast<Type>(attribute)) + '>';
     else
         str += ", nao implementado>";

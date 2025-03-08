@@ -5,7 +5,7 @@
 SymbolTable::SymbolTable() = default;
 
 void SymbolTable::insert(const Row row) {
-    if (row.token.id == Token::Id::ID) {
+    if (row.token.id == Token::Name::ID) {
         std::string lex = std::any_cast<std::string>(row.token.attribute);
         if (lexeme_index.contains(lex))
             return;
@@ -16,7 +16,8 @@ void SymbolTable::insert(const Row row) {
     rows.push_back(row);
 }
 
-SymbolTable::size_type SymbolTable::get_pos_lexeme(const std::string &lexeme) const {
+SymbolTable::size_type
+SymbolTable::get_pos_lexeme(const std::string &lexeme) const {
     return lexeme_index.at(lexeme);
 }
 
