@@ -3,13 +3,14 @@
 #include "exception/LexerException.hpp"
 #include <fstream>
 
-Lexer::Lexer(std::ifstream &source) : source(source), active_buffer(0), row(1), col(1), next_pos(0) {
+Lexer::Lexer(std::ifstream &source) : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0) {
     source.read(buffers[0], BUFFER_SIZE);
     source.read(buffers[1], BUFFER_SIZE);
 
     white_space = [this](char c, char look_ahead) {
         if (std::isspace(c))
             return;
+        col_lex_init = col;
 
         // TODO Este é o primeiro estado do diagrama, após descartar os caracteres white space, fazer a transição
         // para todos outros estados fingindo que estamos lendo o primeiro caractere.
@@ -24,7 +25,7 @@ Lexer::Lexer(std::ifstream &source) : source(source), active_buffer(0), row(1), 
     id_tail = [this](char c, char look_ahead) {
         if (std::isalnum(c) || c == '_') {
             if (!(std::isalnum(look_ahead) || look_ahead == '_'))
-                token = Token(Token::Name::ID, lexeme, row, col);
+                token = Token(Token::Name::ID, lexeme, row, col_lex_init);
         } else
             throw LexerException("Caractere nao reconhecido", row, col, c);
     };
@@ -60,10 +61,13 @@ Token Lexer::next_token() {
         lexeme += c;
         current_state(c, la);
         col++;
-        if (c == '\n')
+        if (c == '\n') {
             row++;
+            col = 1;
+        }
     }
 
+    // Resetar para o estado inicial.
     auto ret = token.value();
     token = {};
     lexeme = {};

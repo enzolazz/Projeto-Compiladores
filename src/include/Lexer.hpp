@@ -15,7 +15,7 @@ class Lexer {
     std::ifstream &source;
     char buffers[2][BUFFER_SIZE];
     unsigned short active_buffer;
-    size_type row, col;
+    size_type row, col, col_lex_init;
     size_type next_pos;
 
     std::optional<Token> token;
