@@ -6,31 +6,6 @@
 Lexer::Lexer(std::ifstream &source) : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0) {
     source.read(buffers[0], BUFFER_SIZE);
     source.read(buffers[1], BUFFER_SIZE);
-
-    white_space = [this](char c, char look_ahead) {
-        if (std::isspace(c)) {
-            lexeme.erase(0, 1);
-            return;
-        }
-        col_lex_init = col;
-
-        // TODO Este é o primeiro estado do diagrama, após descartar os caracteres white space, fazer a transição
-        // para todos outros estados fingindo que estamos lendo o primeiro caractere.
-        if ((c >= 'A' && c <= 'Z') || std::string("abgjklmnoqrsuvwxyz_").find(c) != std::string::npos)
-            current_state = id_tail;
-        else
-            throw LexerException("Transicao ainda nao implementada", row, col, c);
-    };
-
-    current_state = white_space;
-
-    id_tail = [this](char c, char look_ahead) {
-        if (std::isalnum(c) || c == '_') {
-            if (!(std::isalnum(look_ahead) || look_ahead == '_'))
-                token = Token(Token::Name::ID, lexeme, row, col_lex_init);
-        } else
-            throw LexerException("Caractere nao reconhecido", row, col, c);
-    };
 }
 
 char Lexer::next_char() {
@@ -55,8 +30,10 @@ char Lexer::look_ahead() const noexcept {
         return buffers[active_buffer][next_pos];
 }
 
+bool Lexer::isEOF() const noexcept { return eof; }
+
 Token Lexer::next_token() {
-    current_state = white_space;
+    int current_state = 0;
     token = {};
     lexeme = {};
 
@@ -65,7 +42,18 @@ Token Lexer::next_token() {
         char la = look_ahead();
 
         lexeme += c;
-        current_state(c, la);
+
+        switch (current_state) {
+        case 0:
+            current_state = s0_white_space(c, la);
+            break;
+        case 1:
+            current_state = s1_id_tail(c, la);
+            break;
+        default:
+            throw LexerException("Transicao nao implementada", row, col, c);
+        }
+
         col++;
         if (c == '\n') {
             row++;
@@ -75,3 +63,27 @@ Token Lexer::next_token() {
 
     return token.value();
 }
+
+int Lexer::s0_white_space(char c, char look_ahead) {
+    if (std::isspace(c)) {
+        lexeme.erase(0, 1);
+        return 0;
+    }
+    col_lex_init = col;
+
+    // TODO Este é o primeiro estado do diagrama, após descartar os caracteres white space, fazer a transição
+    // para todos outros estados fingindo que estamos lendo o primeiro caractere.
+    if ((c >= 'A' && c <= 'Z') || std::string("abgjklmnoqrsuvwxyz_").find(c) != std::string::npos)
+        return 1;
+    else
+        throw LexerException("Transicao ainda nao implementada", row, col, c);
+};
+
+int Lexer::s1_id_tail(char c, char look_ahead) {
+    if (std::isalnum(c) || c == '_') {
+        if (!(std::isalnum(look_ahead) || look_ahead == '_'))
+            token = Token(Token::Name::ID, lexeme, row, col_lex_init);
+        return 1;
+    } else
+        throw LexerException("Caractere nao reconhecido", row, col, c);
+};
