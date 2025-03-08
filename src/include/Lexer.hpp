@@ -2,7 +2,6 @@
 
 #include "Token.hpp"
 #include <fstream>
-#include <functional>
 #include <optional>
 
 constexpr int BUFFER_SIZE = 128;
