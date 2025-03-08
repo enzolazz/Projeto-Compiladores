@@ -4,7 +4,7 @@ set(TARGET_NAME compilerFront)
 project(${TARGET_NAME} VERSION 0.1 LANGUAGES CXX)
 
 set(SRC_DIR "src")
-file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/*.cpp")
 
 add_executable(${TARGET_NAME} ${SOURCES})
 
