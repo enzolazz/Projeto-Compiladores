@@ -1,13 +1,33 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
-#include "debug.hpp"
 #include "exception/LexerException.hpp"
 #include <fstream>
 
-Lexer::Lexer(std::ifstream &source)
-    : source(source), active_buffer(0), row(1), col(1), next_pos(0) {
+Lexer::Lexer(std::ifstream &source) : source(source), active_buffer(0), row(1), col(1), next_pos(0) {
     source.read(buffers[0], BUFFER_SIZE);
     source.read(buffers[1], BUFFER_SIZE);
+
+    white_space = [this](char c, char look_ahead) {
+        if (std::isspace(c))
+            return;
+
+        // TODO Este é o primeiro estado do diagrama, após descartar os caracteres white space, fazer a transição
+        // para todos outros estados fingindo que estamos lendo o primeiro caractere.
+        if ((c >= 'A' && c <= 'Z') || std::string("abgjklmnoqrsuvwxyz_").find(c) != std::string::npos)
+            current_state = id_tail;
+        else
+            throw LexerException("Transicao ainda nao implementada", row, col, c);
+    };
+
+    current_state = white_space;
+
+    id_tail = [this](char c, char look_ahead) {
+        if (std::isalnum(c) || c == '_') {
+            if (!(std::isalnum(look_ahead) || look_ahead == '_'))
+                token = Token(Token::Name::ID, lexeme, row, col);
+        } else
+            throw LexerException("Caractere nao reconhecido", row, col, c);
+    };
 }
 
 char Lexer::next_char() {
@@ -25,7 +45,7 @@ char Lexer::next_char() {
     return ret;
 }
 
-char Lexer::lookAhead() const noexcept {
+char Lexer::look_ahead() const noexcept {
     if (next_pos == BUFFER_SIZE)
         return buffers[active_buffer ^ 1][0];
     else
@@ -33,50 +53,20 @@ char Lexer::lookAhead() const noexcept {
 }
 
 Token Lexer::next_token() {
-    std::string lex;
-
-    int state = 0;
-    while (true) {
+    while (!token.has_value()) {
         char c = next_char();
-        lex += c;
-        col++;
-        db_file("Lendo caractere", c, state, row, col);
+        char la = look_ahead();
 
-        switch (state) {
-        case 0:
-            state = (c == 'w') ? 1 : -1;
-            break;
-        case 1:
-            state = (c == 'h') ? 2 : -1;
-            break;
-        case 2:
-            state = (c == 'i') ? 3 : -1;
-            break;
-        case 3:
-            state = (c == 'l') ? 4 : -1;
-            break;
-        case 4:
-            if (c == 'e') {
-                char ahead = lookAhead();
-                if (!std::isalnum(ahead) && ahead != '_')
-                    return Token(Token::Name::WHILE, nullptr, row, col);
-            } else
-                state = -1;
-            break;
-        case -1:
-            if (c == ' ' || c == '\0')
-                col++;
-            else if (c == '\t')
-                col += 4; // TODO tamanho do TAB varia de acordo o editor de
-                          // texto, nem sempre são 4 colunas.
-            else if (c == '\n') {
-                col = 0;
-                row++;
-            } else {
-                throw LexerException("Caractere inesperado", row, col, c);
-            }
-        default:
-            break;
-        }
+        lexeme += c;
+        current_state(c, la);
+        col++;
+        if (c == '\n')
+            row++;
     }
+
+    auto ret = token.value();
+    token = {};
+    lexeme = {};
+    current_state = white_space;
+    return ret;
 }

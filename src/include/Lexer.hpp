@@ -2,6 +2,8 @@
 
 #include "Token.hpp"
 #include <fstream>
+#include <functional>
+#include <optional>
 
 constexpr int BUFFER_SIZE = 128;
 
@@ -16,8 +18,12 @@ class Lexer {
     size_type row, col;
     size_type next_pos;
 
+    std::optional<Token> token;
+    std::string lexeme;
+    std::function<void(char, char)> current_state, white_space, id_tail;
+
     char next_char();
-    char lookAhead() const noexcept;
+    char look_ahead() const noexcept;
 
  public:
     Lexer(std::ifstream &source);
