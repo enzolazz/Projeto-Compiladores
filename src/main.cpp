@@ -1,12 +1,18 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
-#include "exception/LexerException.hpp"
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 
 int main(int argc, char *argv[]) {
     using namespace std;
+
+    if (argc != 2) {
+        cerr << "Informe o nome do arquivo a ser lido como primeiro argumento "
+                "da linah de comando."
+             << endl;
+        return EXIT_FAILURE;
+    }
 
     ifstream source(argv[1]);
     if (!source.is_open()) {
