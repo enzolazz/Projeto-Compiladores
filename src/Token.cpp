@@ -95,15 +95,15 @@ std::string Token::to_string(Type type) {
 std::string Token::to_string() const {
     auto str = '<' + Token::to_string(id);
     if (id >= Name::PROGRAMA && id <= Name::BRACKET_END)
-        str += '>';
+        ;
     else if (id >= Name::ID && id <= Name::CARACTERE)
-        str += ", " + std::any_cast<std::string>(attribute) + '>';
+        str += ", " + std::any_cast<std::string>(attribute);
     else if (id == Name::RELOP)
-        str += ", " + to_string(std::any_cast<RelOp>(attribute)) + '>';
+        str += ", " + to_string(std::any_cast<RelOp>(attribute));
     else if (id == Name::TYPE)
-        str += ", " + to_string(std::any_cast<Type>(attribute)) + '>';
+        str += ", " + to_string(std::any_cast<Type>(attribute));
     else
-        str += ", nao implementado>";
+        str += ", nao implementado";
 
-    return str;
+    return str + ", row: " + std::to_string(row) + ", col: " + std::to_string(col) + ">";
 }
