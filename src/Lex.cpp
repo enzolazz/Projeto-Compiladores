@@ -1,12 +1,9 @@
 #include "Lex.hpp"
 #include "Token.hpp"
-#include "include/Lex.hpp"
-#include <cctype>
-#include <iostream>
+#include "debug.hpp"
+#include <fstream>
 
-Lex::Lex() = default;
-
-Lex::Lex(FILE *source) : source(source) {
+Lex::Lex(std::ifstream& source) : source(source) {
     row = 1;
     col = 1;
     pos = BUFFER_SIZE;
@@ -14,7 +11,7 @@ Lex::Lex(FILE *source) : source(source) {
 
 char Lex::next_char() {
     if (pos == BUFFER_SIZE) {
-        fgets(buffer1, BUFFER_SIZE, source);
+        source.read(buffer1, BUFFER_SIZE);
         pos = 0;
     }
 
@@ -58,7 +55,7 @@ Token Lex::next_token() {
             break;
         case 6:
             lookAhead();
-            return Token(TokenName::WHILE, nullptr, row, col);
+            return Token(Token::Id::WHILE, nullptr, row, col);
         case -1:
             c = next_char();
             if (c == ' ' || c == '\0')
@@ -70,7 +67,7 @@ Token Lex::next_token() {
                 row++;
             } else {
                 lookAhead();
-                std::cout << c << " at: (" << row << ", " << col << ")\n";
+                db_line("", c, row, col);
                 throw 505;
             }
             break;
@@ -78,9 +75,11 @@ Token Lex::next_token() {
             break;
         }
 
-        std::cout << c << ", " << state << std::endl;
+        db_line("", c, state);
         col++;
     }
+
+    return {}; // TODO retornar Token?
 }
 
 void Lex::lookAhead() {

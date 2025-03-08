@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Table.hpp"
+#include "Token.hpp"
+#include <fstream>
 
-#define BUFFER_SIZE 100
+constexpr int BUFFER_SIZE = 100;
 
 class Lex {
  private:
-    FILE *source;
+    std::ifstream& source;
     char buffer1[BUFFER_SIZE];
     char buffer2[BUFFER_SIZE];
     int row, col;
@@ -17,7 +18,6 @@ class Lex {
     void lookAhead();
 
  public:
-    Lex();
-    Lex(FILE *source);
+    Lex(std::ifstream& source);
     Token next_token();
 };

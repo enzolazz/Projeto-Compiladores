@@ -1,43 +1,46 @@
 #pragma once
+
+#include <any>
 #include <string>
 
-enum class TokenName : short {
-    PROGRAMA,
-    IF,
-    THEN,
-    ELSE,
-    ELSEIF,
-    WHILE,
-    DO,
-    ATTRIBUTION,
-    BLOCO_START,
-    BLOCO_END,
-    END_SENTENCE,
-    COLON,
-    COMMA,
-    PAR_START,
-    PAR_END,
-    BRACKET_START,
-    BRACKET_END,
-    ID,
-    NUM,
-    CARACTERE,
-    RELOP,
-    TIPO,
-    OPSOMASUB,
-    OPMULDIV,
-    OPPOT
-};
-
 struct Token {
-    TokenName name;
-    void *attribute;
-    // union {
-    //     std::string LEX;
-    //     int INT;
-    //     short RELOP;
-    //     void *NULLPTR;
-    // } attribute;
-    int row;
-    int col;
+    enum class Id : short {
+        PROGRAMA,
+        IF,
+        THEN,
+        ELSE,
+        ELSEIF,
+        WHILE,
+        DO,
+        ATTRIBUTION,
+        BLOCO_START,
+        BLOCO_END,
+        END_SENTENCE,
+        COLON,
+        COMMA,
+        OPPOT,
+        PAR_START,
+        PAR_END,
+        BRACKET_START,
+        BRACKET_END,
+        ID,
+        NUM,
+        CARACTERE,
+        RELOP,
+        TYPE,
+        OPSOMASUB,
+        OPMULDIV
+    };
+    enum class RelOp : short { LT, LE, EQ, NE, GE, GT };
+    enum class Type : short { INT, FLOAT, CHAR };
+
+    static std::string to_string(Id);
+    static std::string to_string(RelOp);
+    static std::string to_string(Type);
+    std::string to_string() const;
+
+    const Id type;
+    const std::any attribute;
+    const int row;
+    const int col;
 };

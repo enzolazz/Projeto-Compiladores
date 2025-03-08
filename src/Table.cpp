@@ -1,15 +1,15 @@
 #include "Table.hpp"
 #include "Token.hpp"
-#include <iostream>
+#include <any>
 
 Table::Table() = default;
 
 int Table::insert(const Row row) {
-    if (row.token.name == TokenName::ID) {
-        std::string *lexPtr = static_cast<std::string *>(row.token.attribute);
-        if (lexs.contains(*lexPtr))
+    if (row.token.type == Token::Id::ID) {
+        std::string lex = std::any_cast<std::string>(row.token.attribute);
+        if (lexs.contains(lex))
             return -1;
-        lexs.insert(*lexPtr);
+        lexs.insert(lex);
     }
 
     rows.push_back(row);
