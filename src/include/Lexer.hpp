@@ -16,8 +16,10 @@ class Lexer {
     char buffers[2][BUFFER_SIZE];
     unsigned short active_buffer;
     size_type row, col, col_lex_init;
-    size_type next_pos;
+    int next_pos;
+
     bool eof;
+    int eofAt;
 
     std::optional<Token> token;
     std::string lexeme;

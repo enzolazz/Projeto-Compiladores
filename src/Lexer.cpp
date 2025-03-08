@@ -3,15 +3,27 @@
 #include "exception/LexerException.hpp"
 #include <fstream>
 
-Lexer::Lexer(std::ifstream &source) : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0) {
+Lexer::Lexer(std::ifstream &source)
+    : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0), eofAt(-2) {
     source.read(buffers[0], BUFFER_SIZE);
-    source.read(buffers[1], BUFFER_SIZE);
+    if (source.gcount() != BUFFER_SIZE)
+        eofAt = source.gcount() - 1;
+    else {
+        source.read(buffers[1], BUFFER_SIZE);
+        if (source.gcount() != BUFFER_SIZE)
+            eofAt = source.gcount() - 1;
+    }
 }
 
 char Lexer::next_char() {
+    if (isEOF())
+        return '\n';
+
     char ret;
     if (next_pos == BUFFER_SIZE) {
         source.read(buffers[active_buffer], BUFFER_SIZE);
+        if (source.gcount() != BUFFER_SIZE)
+            eofAt = source.gcount() - 1;
         active_buffer ^= 1;
         ret = buffers[active_buffer][0];
         next_pos = 1;
@@ -20,10 +32,16 @@ char Lexer::next_char() {
         ++next_pos;
     }
 
+    if (next_pos == eofAt || eofAt == -1)
+        eof = true;
+
     return ret;
 }
 
 char Lexer::look_ahead() const noexcept {
+    if (isEOF())
+        return '\n';
+
     if (next_pos == BUFFER_SIZE)
         return buffers[active_buffer ^ 1][0];
     else

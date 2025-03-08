@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
     Lexer lex(source);
 
-    while (true) {
+    while (!lex.isEOF()) {
         Token tok = lex.next_token();
         cout << "Token lido: " << tok.to_string() << endl;
     }
