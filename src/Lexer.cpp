@@ -8,8 +8,10 @@ Lexer::Lexer(std::ifstream &source) : source(source), active_buffer(0), row(1), 
     source.read(buffers[1], BUFFER_SIZE);
 
     white_space = [this](char c, char look_ahead) {
-        if (std::isspace(c))
+        if (std::isspace(c)) {
+            lexeme.erase(0, 1);
             return;
+        }
         col_lex_init = col;
 
         // TODO Este é o primeiro estado do diagrama, após descartar os caracteres white space, fazer a transição
@@ -54,6 +56,10 @@ char Lexer::look_ahead() const noexcept {
 }
 
 Token Lexer::next_token() {
+    current_state = white_space;
+    token = {};
+    lexeme = {};
+
     while (!token.has_value()) {
         char c = next_char();
         char la = look_ahead();
@@ -67,10 +73,5 @@ Token Lexer::next_token() {
         }
     }
 
-    // Resetar para o estado inicial.
-    auto ret = token.value();
-    token = {};
-    lexeme = {};
-    current_state = white_space;
-    return ret;
+    return token.value();
 }
