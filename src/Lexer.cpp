@@ -68,6 +68,9 @@ Token Lexer::next_token() {
         case 1:
             current_state = s1_id_tail(c, la);
             break;
+        case 2:
+            token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
+            break;
         default:
             throw LexerException("Transicao nao implementada", row, col, c);
         }
@@ -93,6 +96,8 @@ int Lexer::s0_white_space(char c, char look_ahead) {
     // para todos outros estados fingindo que estamos lendo o primeiro caractere.
     if ((c >= 'A' && c <= 'Z') || std::string("abgjklmnoqrsuvwxyz_").find(c) != std::string::npos)
         return 1;
+    else if (c == ';')
+        return 2;
     else
         throw LexerException("Transicao ainda nao implementada", row, col, c);
 };
