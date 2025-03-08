@@ -1,4 +1,4 @@
-#include "Table.hpp"
+#include "SymbolTable.hpp"
 #include "Token.hpp"
 #include <any>
 

@@ -1,5 +1,4 @@
 #include "Token.hpp"
-#include "Table.hpp"
 #include <any>
 #include <stdexcept>
 #include <string>

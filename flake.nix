@@ -10,13 +10,14 @@
     let pkgs = import nixpkgs { inherit system; };
     in {
       devShell = pkgs.mkShell {
-        buildInputs = with pkgs; [
+        nativeBuildInputs = with pkgs; [
           clang
           cmake
         ];
 
         packages = with pkgs; [
           clang-tools
+          lldb
         ];
       };
     });

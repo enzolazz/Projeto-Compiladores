@@ -1,4 +1,4 @@
-#include "Lex.hpp"
+#include "Lexer.hpp"
 #include "Token.hpp"
 #include <cstdlib>
 #include <fstream>
@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    Lex lex(source);
+    Lexer lex(source);
 
     while (true) {
         try {
