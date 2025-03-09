@@ -279,7 +279,44 @@ Token Lexer::next_token() {
             }
             break;
         case 59:
-            throw "AAAAAAAAA";
+            if (c == 'l')
+                current_state = 60;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 60:
+            if (c == 'o')
+                current_state = 61;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 61:
+            if (c == 'a')
+                current_state = 62;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 62:
+            if (c == 't')
+                current_state = 63;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 63:
+            if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                token = Token(Token::Name::TYPE, Token::Type::FLOAT, row, col_lex_init);
+            }
             break;
         case 90:
             current_state = s90_id_tail(c);
