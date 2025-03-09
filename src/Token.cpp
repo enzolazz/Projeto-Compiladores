@@ -120,6 +120,8 @@ std::string Token::to_string() const {
         str += ", " + to_string(std::any_cast<Type>(attribute));
     else if (id == Name::OPMULDIV)
         str += ", " + to_string(std::any_cast<OpMulDiv>(attribute));
+    else if (id == Name::OPSOMASUB)
+        str += ", " + to_string(std::any_cast<OpSomaSub>(attribute));
     else
         str += ", nao implementado";
 

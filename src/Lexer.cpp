@@ -211,6 +211,18 @@ int Lexer::s0_white_space(char c) {
         return -1;
     case '*':
         return 28;
+    case '+':
+        token = Token(Token::Name::OPSOMASUB, Token::OpSomaSub::SOMA, row, col);
+        return -1;
+    case '-':
+        token = Token(Token::Name::OPSOMASUB, Token::OpSomaSub::SUB, row, col);
+        return -1;
+    case ')':
+        token = Token(Token::Name::PAR_END, nullptr, row, col);
+        return -1;
+    case '(':
+        token = Token(Token::Name::PAR_START, nullptr, row, col);
+        return -1;
     default:
         if (c >= '0' && c <= '9')
             return 20;
