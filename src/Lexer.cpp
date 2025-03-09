@@ -1,7 +1,6 @@
 #include "Lexer.hpp"
 #include "SymbolTable.hpp"
 #include "Token.hpp"
-#include "debug.hpp"
 #include "exception/LexerException.hpp"
 #include <cctype>
 #include <fstream>
@@ -28,7 +27,7 @@ char Lexer::next_char() {
     char ret;
     if (next_pos == BUFFER_SIZE) {
         source.read(buffers[active_buffer], BUFFER_SIZE);
-        if (source.gcount() != BUFFER_SIZE)
+        if (source.gcount() != BUFFER_SIZE && std::get<0>(eofAt) < 0)
             eofAt = {active_buffer, source.gcount()};
         active_buffer ^= 1;
         ret = buffers[active_buffer][0];
@@ -447,6 +446,46 @@ Token Lexer::next_token() {
                 token = Token(Token::Name::THEN, nullptr, row, col_lex_init);
             }
             break;
+        case 84:
+            if (c == 'h')
+                current_state = 85;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 85:
+            if (c == 'i')
+                current_state = 86;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 86:
+            if (c == 'l')
+                current_state = 87;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 87:
+            if (c == 'e')
+                current_state = 88;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 88:
+            if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                token = Token(Token::Name::WHILE, nullptr, row, col_lex_init);
+            }
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -535,6 +574,8 @@ int Lexer::s0_white_space(char c) {
         return 70;
     case 't':
         return 79;
+    case 'w':
+        return 84;
     default:
         if (c >= '0' && c <= '9')
             return 20;
