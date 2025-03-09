@@ -181,8 +181,6 @@ Token Lexer::next_token() {
         case 42:
             if (c == 'o')
                 current_state = 43;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else {
                 look_ahead();
                 current_state = 90;
@@ -199,8 +197,6 @@ Token Lexer::next_token() {
         case 45:
             if (c == 'l')
                 current_state = 46;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else {
                 look_ahead();
                 current_state = 90;
@@ -209,8 +205,6 @@ Token Lexer::next_token() {
         case 46:
             if (c == 's')
                 current_state = 47;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else {
                 look_ahead();
                 current_state = 90;
@@ -219,8 +213,6 @@ Token Lexer::next_token() {
         case 47:
             if (c == 'e')
                 current_state = 48;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else {
                 look_ahead();
                 current_state = 90;
@@ -231,14 +223,14 @@ Token Lexer::next_token() {
                 current_state = 50;
             else if (isValidIdChar(c))
                 current_state = 90;
-            else
+            else {
+                look_ahead();
                 token = Token(Token::Name::ELSE, nullptr, row, col_lex_init);
+            }
             break;
         case 50:
             if (c == 'f')
                 current_state = 51;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else {
                 look_ahead();
                 current_state = 90;
@@ -247,16 +239,16 @@ Token Lexer::next_token() {
         case 51:
             if (isValidIdChar(c))
                 current_state = 90;
-            else
+            else {
+                look_ahead();
                 token = Token(Token::Name::ELSEIF, nullptr, row, col_lex_init);
+            }
             break;
         case 53:
             if (c == 'f')
                 current_state = 54;
             else if (c == 'n')
                 current_state = 56;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else {
                 look_ahead();
                 current_state = 90;
@@ -273,8 +265,6 @@ Token Lexer::next_token() {
         case 56:
             if (c == 't')
                 current_state = 57;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else {
                 look_ahead();
                 current_state = 90;
@@ -287,6 +277,9 @@ Token Lexer::next_token() {
                 look_ahead();
                 token = Token(Token::Name::TYPE, Token::Type::INT, row, col_lex_init);
             }
+            break;
+        case 59:
+            throw "AAAAAAAAA";
             break;
         case 90:
             current_state = s90_id_tail(c);
@@ -367,6 +360,8 @@ int Lexer::s0_white_space(char c) {
         return 45;
     case 'i':
         return 53;
+    case 'f':
+        return 59;
     default:
         if (c >= '0' && c <= '9')
             return 20;

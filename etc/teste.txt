@@ -7,7 +7,7 @@ elseif2
 
 i
 in
-int
+int[]
 if
 if2
 
