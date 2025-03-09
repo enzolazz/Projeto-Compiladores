@@ -157,6 +157,25 @@ Token Lexer::next_token() {
                 token = Token(Token::Name::OPMULDIV, Token::OpMulDiv::MUL, row, col);
             }
             break;
+        case 35:
+            switch (c) {
+            case '=':
+                token = Token(Token::Name::RELOP, Token::RelOp::LE);
+                break;
+            case '>':
+                token = Token(Token::Name::RELOP, Token::RelOp::NE);
+                break;
+            default:
+                look_ahead();
+                token = Token(Token::Name::RELOP, Token::RelOp::LT);
+            }
+            break;
+        case 39:
+            if (c == '=')
+                token = Token(Token::Name::RELOP, Token::RelOp::GE);
+            else
+                token = Token(Token::Name::RELOP, Token::RelOp::GT);
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -223,6 +242,10 @@ int Lexer::s0_white_space(char c) {
     case '(':
         token = Token(Token::Name::PAR_START, nullptr, row, col);
         return -1;
+    case '<':
+        return 35;
+    case '>':
+        return 39;
     default:
         if (c >= '0' && c <= '9')
             return 20;
