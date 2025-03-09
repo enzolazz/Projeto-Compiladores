@@ -71,6 +71,12 @@ Token Lexer::next_token() {
         case 5:
             token = Token(Token::Name::ATTRIBUTION, nullptr, row, col_lex_init);
             break;
+        case 6:
+            if (c == '}')
+                token = Token(Token::Name::BLOCO_END, nullptr, row, col);
+            else
+                throw LexerException("Caractere não reconhecido", row, col, c);
+            break;
         case 19:
             token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
             break;
@@ -89,8 +95,7 @@ Token Lexer::next_token() {
             else if (c == 'E')
                 current_state = 23;
             else {
-                look_ahead();
-                current_state = 26;
+                current_state = s26_num_f(0);
             }
             break;
         case 23:
@@ -110,24 +115,11 @@ Token Lexer::next_token() {
         case 25:
             if (c >= '0' && c <= '9')
                 current_state = 25;
-            else {
-                look_ahead();
-
-                current_state = 26;
-            }
-            break;
-        case 26:
-            look_ahead();
-            token = Token(Token::Name::NUM, lexeme, row, col);
-            // TODO inserir na tabela de símbolos?
+            else
+                current_state = s26_num_f(0);
             break;
         case 90:
             current_state = s90_id_tail(c);
-            break;
-        case 91:
-            look_ahead();
-            token = Token(Token::Name::ID, lexeme, row, col);
-            symbolTable.insert(Row(token.value()));
             break;
 
         default:
@@ -159,6 +151,8 @@ int Lexer::s0_white_space(char c) {
         return 3;
     case ';':
         return 19;
+    case '%':
+        return 6;
     default:
         if (c >= '0' && c <= '9')
             return 20;
@@ -172,9 +166,11 @@ int Lexer::s0_white_space(char c) {
 int Lexer::s3_colon(char c) {
     if (c == '=')
         return 5;
-    else
+    else {
+        look_ahead();
         token = Token(Token::Name::COLON, nullptr, row, col_lex_init);
-    return 3;
+        return -1;
+    }
 }
 
 int Lexer::s20_num(char c) {
@@ -185,9 +181,14 @@ int Lexer::s20_num(char c) {
     else if (c == 'E')
         return 23;
     else {
-        look_ahead();
-        return 26;
+        return s26_num_f(0);
     }
+}
+
+int Lexer::s26_num_f(char c) {
+    look_ahead();
+    token = Token(Token::Name::NUM, lexeme, row, col);
+    return -1;
 }
 
 int Lexer::s90_id_tail(char c) {
@@ -195,6 +196,8 @@ int Lexer::s90_id_tail(char c) {
         return 90;
     } else {
         look_ahead();
-        return 91;
+        token = Token(Token::Name::ID, lexeme, row, col);
+        symbolTable.insert(Row(token.value()));
+        return -1;
     }
 };

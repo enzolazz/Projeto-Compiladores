@@ -28,7 +28,7 @@ class Lexer {
     void look_ahead() noexcept;
 
     using state_type = int(char);
-    state_type s0_white_space, s3_colon, s20_num, s90_id_tail;
+    state_type s0_white_space, s3_colon, s20_num, s26_num_f, s90_id_tail;
 
  public:
     Lexer(std::ifstream &source, SymbolTable &symbolTable);
