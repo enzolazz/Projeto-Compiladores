@@ -56,6 +56,8 @@ void Lexer::look_ahead() {
 
 bool Lexer::isEOF() const noexcept { return eof; }
 
+static bool isValidIdChar(char c) { return std::isalnum(c) || c == '_'; }
+
 Token Lexer::next_token() {
     int current_state = 0;
     token = {};
@@ -176,6 +178,24 @@ Token Lexer::next_token() {
             else
                 token = Token(Token::Name::RELOP, Token::RelOp::GT);
             break;
+        case 42:
+            if (c == 'o')
+                current_state = 43;
+            else if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 43:
+            if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                token = Token(Token::Name::DO, nullptr, row, col);
+            }
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -249,6 +269,8 @@ int Lexer::s0_white_space(char c) {
     case '=':
         token = Token(Token::Name::RELOP, Token::RelOp::EQ, row, col);
         return -1;
+    case 'd':
+        return 42;
     default:
         if (c >= '0' && c <= '9')
             return 20;
@@ -288,7 +310,7 @@ int Lexer::s26_num_f(char c) {
 }
 
 int Lexer::s90_id_tail(char c) {
-    if (std::isalnum(c) || c == '_') {
+    if (isValidIdChar(c)) {
         return 90;
     } else {
         look_ahead();
