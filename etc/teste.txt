@@ -1,18 +1,59 @@
-programa meu_programa() {%
-    char: a;
-    float: numero1, numero2;
-    a := 'a';
-    numero2 := 432E-9;
-    numero1 := 1.23; {# Comentario de
-    # multiplas linhas.
-    #}
-    if [ a <> 'b' ] then {%
-        {# Fazer alguma coisa #}
-        2 + 2;
-    %} elseif [ pi = 3 ] then {%
-        seila(pi);
-        {##}
-    %}
-    while [ numero2 < numero1 ] do
-        numero2 := numero2 + 1;
+programa TesteCompilador()
+{%
+  int: a, b, cont;
+  float: x, y;
+  char: c, d;
+
+  a := 10, 12 , 6546 , 555555 ,                                                                        6,
+
+
+
+
+
+
+
+1  ;
+  b := 20;
+  x := 3.14;
+  y := 2.71;
+  c := 'Z';
+  d := '\n';
+
+  cont := 0;
+
+  {# Este é umvas;d lgvmweg poqer~/g]´meg~wt´h ´wrth ´]em bl~çk df~çndçn dgn ]l# comentário de teste #}
+
+  if [ a < b ] then
+      a := a + 1;
+  elseif [ a = b ] then
+      b := b - 1;
+  else
+      a := a - 1;
+
+  while [ cont < 5 ] do
+      cont := cont + 1;
+
+  while [ cont >= 5 ] do
+      if [ cont > 7 ] then
+          cont := cont - 1;
+      else
+          cont := cont + 2;
+
+  do
+      x := x * 2;
+  while [ x <= y ];
+
+  a := (a + b) * (cont - 1) / 2;
+  x := x ** 2;
+
+  {% 
+    int: z;
+    z := a;
+    if [ z >= 10 ] then
+        z := z - 10;
+    else
+        z := z + 10;
+  %}
+
+  y := y + 0.5;
 %}

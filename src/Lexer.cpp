@@ -7,6 +7,30 @@
 #include <stdexcept>
 #include <string>
 
+static char to_char(const std::string &lexeme) {
+    if (lexeme[1] == '\\') {
+        switch (lexeme[2]) {
+        case 'a':
+            return '\a';
+        case 'b':
+            return '\b';
+        case 't':
+            return '\t';
+        case 'n':
+            return '\n';
+        case 'v':
+            return '\v';
+        case 'f':
+            return '\f';
+        case 'r':
+            return '\r';
+        default:
+            return lexeme[2];
+        }
+    }
+    return lexeme[1];
+}
+
 Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
     : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
       eofAt({-1, -1}) {
@@ -105,14 +129,24 @@ Token Lexer::next_token() {
             }
             break;
         case 15:
-            current_state = 16;
+            if (c == '\\')
+                current_state = 16;
+            else if (c != '\\' && c != '\'' && c != '\n')
+                current_state = 17;
+            else
+                throw LexerException("Caractere inesperado", row, col, c);
             break;
         case 16:
-            if (c == '\'') {
-                token = Token(Token::Name::CARACTERE, lexeme[1], row, col_lex_init);
-                symbolTable.insert(Row(token.value()));
-            } else
-                throw LexerException("Caractere não reconhecido", row, col, c);
+            if (c != '\n' && c != '\t')
+                current_state = 17;
+            else
+                throw LexerException("Caractere inesperado", row, col, c);
+            break;
+        case 17:
+            if (c == '\'')
+                current_state = 93;
+            else
+                throw LexerException("Caractere inesperado", row, col, c);
             break;
         case 20:
             current_state = s20_num(c);
@@ -490,7 +524,10 @@ Token Lexer::next_token() {
         case 90:
             current_state = s90_id_tail(c);
             break;
-
+        case 93:
+            token = Token(Token::Name::CARACTERE, to_char(lexeme), row, col_lex_init);
+            symbolTable.insert(Row(token.value()));
+            break;
         default:
             throw LexerException("Estado nao implementado: " + std::to_string(current_state), row, col, c);
         }
