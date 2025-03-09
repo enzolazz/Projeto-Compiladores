@@ -80,13 +80,13 @@ Token Lexer::next_token() {
             break;
         case 6:
             if (c == '}')
-                token = Token(Token::Name::BLOCO_END, nullptr, row, col);
+                token = Token(Token::Name::BLOCO_END, nullptr, row, col_lex_init);
             else
                 throw LexerException("Caractere não reconhecido", row, col, c);
             break;
         case 8:
             if (c == '%')
-                token = Token(Token::Name::BLOCO_START, nullptr, row, col);
+                token = Token(Token::Name::BLOCO_START, nullptr, row, col_lex_init);
             else if (c == '#')
                 current_state = 10;
             else
@@ -109,7 +109,7 @@ Token Lexer::next_token() {
             break;
         case 16:
             if (c == '\'')
-                token = Token(Token::Name::CARACTERE, lexeme[1], row, col);
+                token = Token(Token::Name::CARACTERE, lexeme[1], row, col_lex_init);
             else
                 throw LexerException("Caractere não reconhecido", row, col, c);
             break;
@@ -153,30 +153,30 @@ Token Lexer::next_token() {
             break;
         case 28:
             if (c == '*')
-                token = Token(Token::Name::OPPOT, nullptr, row, col);
+                token = Token(Token::Name::OPPOT, nullptr, row, col_lex_init);
             else {
                 look_ahead();
-                token = Token(Token::Name::OPMULDIV, Token::OpMulDiv::MUL, row, col);
+                token = Token(Token::Name::OPMULDIV, Token::OpMulDiv::MUL, row, col_lex_init);
             }
             break;
         case 35:
             switch (c) {
             case '=':
-                token = Token(Token::Name::RELOP, Token::RelOp::LE);
+                token = Token(Token::Name::RELOP, Token::RelOp::LE, row, col_lex_init);
                 break;
             case '>':
-                token = Token(Token::Name::RELOP, Token::RelOp::NE);
+                token = Token(Token::Name::RELOP, Token::RelOp::NE, row, col_lex_init);
                 break;
             default:
                 look_ahead();
-                token = Token(Token::Name::RELOP, Token::RelOp::LT);
+                token = Token(Token::Name::RELOP, Token::RelOp::LT, row, col_lex_init);
             }
             break;
         case 39:
             if (c == '=')
-                token = Token(Token::Name::RELOP, Token::RelOp::GE);
+                token = Token(Token::Name::RELOP, Token::RelOp::GE, row, col_lex_init);
             else
-                token = Token(Token::Name::RELOP, Token::RelOp::GT);
+                token = Token(Token::Name::RELOP, Token::RelOp::GT, row, col_lex_init);
             break;
         case 42:
             if (c == 'o')
@@ -193,8 +193,46 @@ Token Lexer::next_token() {
                 current_state = 90;
             else {
                 look_ahead();
-                token = Token(Token::Name::DO, nullptr, row, col);
+                token = Token(Token::Name::DO, nullptr, row, col_lex_init);
             }
+            break;
+        case 45:
+            if (c == 'l')
+                current_state = 46;
+            else if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 46:
+            if (c == 's')
+                current_state = 47;
+            else if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 47:
+            if (c == 'e')
+                current_state = 48;
+            else if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 48:
+            if (c == 'i')
+                current_state = 50;
+            if (isValidIdChar(c))
+                current_state = 90;
+            else
+                token = Token(Token::Name::ELSE, nullptr, row, col_lex_init);
             break;
         case 90:
             current_state = s90_id_tail(c);
@@ -271,6 +309,8 @@ int Lexer::s0_white_space(char c) {
         return -1;
     case 'd':
         return 42;
+    case 'e':
+        return 45;
     default:
         if (c >= '0' && c <= '9')
             return 20;
