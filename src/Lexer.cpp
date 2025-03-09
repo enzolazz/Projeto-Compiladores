@@ -318,6 +318,38 @@ Token Lexer::next_token() {
                 token = Token(Token::Name::TYPE, Token::Type::FLOAT, row, col_lex_init);
             }
             break;
+        case 65:
+            if (c == 'h')
+                current_state = 66;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 66:
+            if (c == 'a')
+                current_state = 67;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 67:
+            if (c == 'r')
+                current_state = 68;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 68:
+            if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                token = Token(Token::Name::TYPE, Token::Type::CHAR, row, col_lex_init);
+            }
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -399,6 +431,8 @@ int Lexer::s0_white_space(char c) {
         return 53;
     case 'f':
         return 59;
+    case 'c':
+        return 65;
     default:
         if (c >= '0' && c <= '9')
             return 20;
