@@ -4,6 +4,7 @@
 #include "exception/LexerException.hpp"
 #include <cctype>
 #include <fstream>
+#include <string>
 
 Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
     : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
@@ -77,6 +78,26 @@ Token Lexer::next_token() {
             else
                 throw LexerException("Caractere não reconhecido", row, col, c);
             break;
+        case 8:
+            if (c == '%')
+                token = Token(Token::Name::BLOCO_START, nullptr, row, col);
+            else if (c == '#')
+                current_state = 10;
+            else
+                throw LexerException("Caractere não reconhecido", row, col, c);
+            break;
+        case 10:
+            if (c == '#')
+                current_state = 11;
+            else
+                current_state = 10;
+            break;
+        case 11:
+            if (c == '}') {
+                current_state = 0;
+                lexeme = {};
+            }
+            break;
         case 19:
             token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
             break;
@@ -123,7 +144,7 @@ Token Lexer::next_token() {
             break;
 
         default:
-            throw LexerException("Transicao nao implementada", row, col, c);
+            throw LexerException("Estado nao implementado: " + std::to_string(current_state), row, col, c);
         }
 
         col++;
@@ -153,6 +174,8 @@ int Lexer::s0_white_space(char c) {
         return 19;
     case '%':
         return 6;
+    case '{':
+        return 8;
     default:
         if (c >= '0' && c <= '9')
             return 20;

@@ -1,3 +1,6 @@
-zero := : 1.23a %}1 2. , 2;
-while;
-whaaaaaaaaaaaaaaaaaab;
+{%
+    zero: sla := 1.23a; {# Comentario de
+    # multiplas linhas.
+    #}
+    while
+%}
