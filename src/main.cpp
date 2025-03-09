@@ -1,10 +1,13 @@
 #include "Lexer.hpp"
 #include "SymbolTable.hpp"
 #include "Token.hpp"
+#include <any>
 #include <cstdlib>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <ostream>
+#include <string>
 
 int main(int argc, char *argv[]) {
     using namespace std;
@@ -26,6 +29,20 @@ int main(int argc, char *argv[]) {
     Lexer lex(source, symbolTable);
 
     for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
-        cout << "Token lido: " << tok.value().to_string() << endl;
+        cout << "Token lido: " << tok.value().to_string();
+        switch (tok->id) {
+        case Token::Name::ID:
+        case Token::Name::NUM:
+            cout << " Linha da tabela: "
+                 << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string<std::string>(false);
+            break;
+        case Token::Name::CARACTERE:
+            cout << " Tabela: "
+                 << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string<signed char>(false);
+            break;
+        default:
+            break;
+        }
+        cout << endl;
     }
 }

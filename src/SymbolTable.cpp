@@ -7,7 +7,7 @@ SymbolTable::SymbolTable() = default;
 
 SymbolTable::size_type SymbolTable::insert(const Row row) {
     if (row.token.id == Token::Name::ID) {
-        std::string lex = std::any_cast<std::string>(row.token.attribute);
+        const std::string lex = std::any_cast<std::string>(row.value);
         try {
             return lexeme_index.at(lex);
         } catch (std::out_of_range &) {

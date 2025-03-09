@@ -524,8 +524,8 @@ std::optional<Token> Lexer::next_token() {
             current_state = s90_id_tail(c);
             break;
         case 93:
-            token = Token(Token::Name::CARACTERE, to_char(lexeme), row, col_lex_init);
-            symbolTable.insert(Row(token.value()));
+            token = Token(Token::Name::CARACTERE, nullptr, row, col_lex_init);
+            token->attribute = symbolTable.insert(Row(token.value(), {}, to_char(lexeme)));
             break;
         default:
             throw LexerException("Estado nao implementado: " + std::to_string(current_state), row, col, c);
@@ -651,8 +651,8 @@ int Lexer::s20_num(signed char c) {
 
 int Lexer::s26_num_f(signed char c) {
     look_ahead();
-    token = Token(Token::Name::NUM, lexeme, row, col);
-    symbolTable.insert(Row(token.value()));
+    token = Token(Token::Name::NUM, nullptr, row, col);
+    token->attribute = symbolTable.insert(Row(token.value(), {}, lexeme));
     return -1;
 }
 
@@ -661,8 +661,8 @@ int Lexer::s90_id_tail(signed char c) {
         return 90;
     } else {
         look_ahead();
-        token = Token(Token::Name::ID, lexeme, row, col);
-        symbolTable.insert(Row(token.value()));
+        token = Token(Token::Name::ID, nullptr, row, col);
+        token->attribute = symbolTable.insert(Row(token.value(), {}, lexeme));
         return -1;
     }
 }

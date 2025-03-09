@@ -1,4 +1,5 @@
 #include "Token.hpp"
+#include "SymbolTable.hpp"
 #include <any>
 #include <stdexcept>
 #include <string>
@@ -110,11 +111,10 @@ std::string Token::to_string() const {
     auto str = '<' + Token::to_string(id);
     if (id >= Name::PROGRAMA && id <= Name::BRACKET_END)
         ;
-    else if (id == Name::ID || id == Name::NUM)
-        str += ", " + std::any_cast<std::string>(attribute);
-    else if (id == Name::CARACTERE)
-        str += std::string(", ") + std::to_string(std::any_cast<signed char>(attribute));
-    else if (id == Name::RELOP)
+    else if (id == Name::ID || id == Name::NUM || id == Name::CARACTERE) {
+        auto pos = std::any_cast<SymbolTable::size_type>(attribute);
+        str += ", " + std::to_string(pos);
+    } else if (id == Name::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute));
     else if (id == Name::TYPE)
         str += ", " + to_string(std::any_cast<Type>(attribute));
