@@ -4,6 +4,7 @@
 #include "exception/LexerException.hpp"
 #include <cctype>
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
@@ -42,7 +43,10 @@ char Lexer::next_char() {
     return ret;
 }
 
-void Lexer::look_ahead() noexcept {
+void Lexer::look_ahead() {
+    if (lexeme.empty())
+        throw std::logic_error("Look ahead utilizado quando lexema era vazio. Nao ha nada para reverter");
+
     next_pos--;
     col--;
     if (buffers[active_buffer][next_pos] == '\n')
