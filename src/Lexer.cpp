@@ -46,6 +46,7 @@ void Lexer::look_ahead() noexcept {
     col--;
     if (buffers[active_buffer][next_pos] == '\n')
         row--;
+    lexeme.pop_back();
 }
 
 bool Lexer::isEOF() const noexcept { return eof; }
@@ -73,6 +74,53 @@ Token Lexer::next_token() {
         case 19:
             token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
             break;
+        case 20:
+            current_state = s20_num(c);
+            break;
+        case 21:
+            if (c >= '0' && c <= '9')
+                current_state = 22;
+            else
+                throw LexerException("Caractere não reconhecido", row, col, c);
+            break;
+        case 22:
+            if (c >= '0' && c <= '9')
+                current_state = 22;
+            else if (c == 'E')
+                current_state = 23;
+            else {
+                look_ahead();
+                current_state = 26;
+            }
+            break;
+        case 23:
+            if (c == '+' || c == '-')
+                current_state = 24;
+            else if (c >= '0' && c <= '9')
+                current_state = 25;
+            else
+                throw LexerException("Caractere não reconhecido", row, col, c);
+            break;
+        case 24:
+            if (c >= '0' && c <= '9')
+                current_state = 25;
+            else
+                throw LexerException("Caractere não reconhecido", row, col, c);
+            break;
+        case 25:
+            if (c >= '0' && c <= '9')
+                current_state = 25;
+            else {
+                look_ahead();
+
+                current_state = 26;
+            }
+            break;
+        case 26:
+            look_ahead();
+            token = Token(Token::Name::NUM, lexeme, row, col);
+            // TODO inserir na tabela de símbolos?
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -98,7 +146,7 @@ Token Lexer::next_token() {
 
 int Lexer::s0_white_space(char c) {
     if (std::isspace(c)) {
-        lexeme.erase(0, 1);
+        lexeme.pop_back();
         return 0;
     }
     col_lex_init = col;
@@ -112,6 +160,8 @@ int Lexer::s0_white_space(char c) {
     case ';':
         return 19;
     default:
+        if (c >= '0' && c <= '9')
+            return 20;
         if ((c >= 'A' && c <= 'Z') || std::string("abghjklmnoqrsuvxyz_").find(c) != std::string::npos)
             return 90;
     }
@@ -127,9 +177,24 @@ int Lexer::s3_colon(char c) {
     return 3;
 }
 
+int Lexer::s20_num(char c) {
+    if (c >= '0' && c <= '9')
+        return 20;
+    else if (c == '.')
+        return 21;
+    else if (c == 'E')
+        return 23;
+    else {
+        look_ahead();
+        return 26;
+    }
+}
+
 int Lexer::s90_id_tail(char c) {
     if (std::isalnum(c) || c == '_') {
         return 90;
-    } else
+    } else {
+        look_ahead();
         return 91;
+    }
 };
