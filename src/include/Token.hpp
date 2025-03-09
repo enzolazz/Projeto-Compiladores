@@ -12,7 +12,7 @@ struct Token {
         ELSEIF,
         WHILE,
         DO,
-        ATTRIBUTION,
+        ATTRIBUITION,
         BLOCO_START,
         BLOCO_END,
         END_SENTENCE,
@@ -33,10 +33,14 @@ struct Token {
     };
     enum class RelOp : short { LT, LE, EQ, NE, GE, GT };
     enum class Type : short { INT, FLOAT, CHAR };
+    enum class OpMulDiv : short { MUL, DIV };
+    enum class OpSomaSub : short { SOMA, SUB };
 
     static std::string to_string(Name);
     static std::string to_string(RelOp);
     static std::string to_string(Type);
+    static std::string to_string(OpMulDiv);
+    static std::string to_string(OpSomaSub);
     std::string to_string() const;
 
     Name id;

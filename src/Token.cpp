@@ -19,7 +19,7 @@ std::string Token::to_string(Name type) {
         return "WHILE";
     case Name::DO:
         return "DO";
-    case Name::ATTRIBUTION:
+    case Name::ATTRIBUITION:
         return "ATTRIBUTION";
     case Name::BLOCO_START:
         return "BLOCO_START";
@@ -92,6 +92,20 @@ std::string Token::to_string(Type type) {
     }
 }
 
+std::string Token::to_string(OpMulDiv op) {
+    if (op == OpMulDiv::DIV)
+        return "DIV";
+    else
+        return "MUL";
+}
+
+std::string Token::to_string(OpSomaSub op) {
+    if (op == OpSomaSub::SOMA)
+        return "SOMA";
+    else
+        return "SUB";
+}
+
 std::string Token::to_string() const {
     auto str = '<' + Token::to_string(id);
     if (id >= Name::PROGRAMA && id <= Name::BRACKET_END)
@@ -104,6 +118,8 @@ std::string Token::to_string() const {
         str += ", " + to_string(std::any_cast<RelOp>(attribute));
     else if (id == Name::TYPE)
         str += ", " + to_string(std::any_cast<Type>(attribute));
+    else if (id == Name::OPMULDIV)
+        str += ", " + to_string(std::any_cast<OpMulDiv>(attribute));
     else
         str += ", nao implementado";
 

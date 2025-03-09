@@ -74,7 +74,7 @@ Token Lexer::next_token() {
             current_state = s3_colon(c);
             break;
         case 5:
-            token = Token(Token::Name::ATTRIBUTION, nullptr, row, col_lex_init);
+            token = Token(Token::Name::ATTRIBUITION, nullptr, row, col_lex_init);
             break;
         case 6:
             if (c == '}')
@@ -110,9 +110,6 @@ Token Lexer::next_token() {
                 token = Token(Token::Name::CARACTERE, lexeme[1], row, col);
             else
                 throw LexerException("Caractere não reconhecido", row, col, c);
-            break;
-        case 19:
-            token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
             break;
         case 20:
             current_state = s20_num(c);
@@ -152,6 +149,14 @@ Token Lexer::next_token() {
             else
                 current_state = s26_num_f(0);
             break;
+        case 28:
+            if (c == '*')
+                token = Token(Token::Name::OPPOT, nullptr, row, col);
+            else {
+                look_ahead();
+                token = Token(Token::Name::OPMULDIV, Token::OpMulDiv::MUL, row, col);
+            }
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -184,7 +189,8 @@ int Lexer::s0_white_space(char c) {
     case ':':
         return 3;
     case ';':
-        return 19;
+        token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
+        return -1;
     case '%':
         return 6;
     case '{':
@@ -197,6 +203,14 @@ int Lexer::s0_white_space(char c) {
         return -1;
     case '\'':
         return 15;
+    case ',':
+        token = Token(Token::Name::COMMA, nullptr, row, col);
+        return -1;
+    case '/':
+        token = Token(Token::Name::OPMULDIV, Token::OpMulDiv::DIV, row, col);
+        return -1;
+    case '*':
+        return 28;
     default:
         if (c >= '0' && c <= '9')
             return 20;
