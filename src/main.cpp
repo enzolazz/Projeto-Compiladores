@@ -1,4 +1,5 @@
 #include "Lexer.hpp"
+#include "SymbolTable.hpp"
 #include "Token.hpp"
 #include <cstdlib>
 #include <fstream>
@@ -20,7 +21,8 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    Lexer lex(source);
+    SymbolTable symbolTable;
+    Lexer lex(source, symbolTable);
 
     while (!lex.isEOF()) {
         Token tok = lex.next_token();

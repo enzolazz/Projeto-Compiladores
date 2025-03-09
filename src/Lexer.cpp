@@ -1,11 +1,13 @@
 #include "Lexer.hpp"
+#include "SymbolTable.hpp"
 #include "Token.hpp"
 #include "exception/LexerException.hpp"
 #include <cctype>
 #include <fstream>
 
-Lexer::Lexer(std::ifstream &source)
-    : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0), eofAt(-1) {
+Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
+    : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
+      eofAt(-1) {
     source.read(buffers[0], BUFFER_SIZE);
     if (source.gcount() != BUFFER_SIZE)
         eofAt = source.gcount();
@@ -125,8 +127,10 @@ int Lexer::s3_colon(char c, char look_ahead) {
 
 int Lexer::s90_id_tail(char c, char look_ahead) {
     if (std::isalnum(c) || c == '_') {
-        if (!(std::isalnum(look_ahead) || look_ahead == '_'))
+        if (!(std::isalnum(look_ahead) || look_ahead == '_')) {
             token = Token(Token::Name::ID, lexeme, row, col_lex_init);
+            symbolTable.insert(Row(token.value()));
+        }
         return 90;
     } else
         throw LexerException("Caractere nao reconhecido", row, col, c);
