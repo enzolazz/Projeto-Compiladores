@@ -25,9 +25,9 @@ class Lexer {
     std::string lexeme;
 
     char next_char();
-    char look_ahead() const noexcept;
+    void look_ahead() noexcept;
 
-    using state_type = int(char, char);
+    using state_type = int(char);
     state_type s0_white_space, s3_colon, s90_id_tail;
 
  public:

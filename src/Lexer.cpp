@@ -41,14 +41,11 @@ char Lexer::next_char() {
     return ret;
 }
 
-char Lexer::look_ahead() const noexcept {
-    if (isEOF())
-        return '\n';
-
-    if (next_pos == BUFFER_SIZE)
-        return buffers[active_buffer ^ 1][0];
-    else
-        return buffers[active_buffer][next_pos];
+void Lexer::look_ahead() noexcept {
+    next_pos--;
+    col--;
+    if (buffers[active_buffer][next_pos] == '\n')
+        row--;
 }
 
 bool Lexer::isEOF() const noexcept { return eof; }
@@ -60,26 +57,31 @@ Token Lexer::next_token() {
 
     while (!token.has_value()) {
         char c = next_char();
-        char la = look_ahead();
 
         lexeme += c;
 
         switch (current_state) {
         case 0:
-            current_state = s0_white_space(c, la);
+            current_state = s0_white_space(c);
             break;
         case 3:
-            current_state = s3_colon(c, la);
+            current_state = s3_colon(c);
             break;
         case 5:
             token = Token(Token::Name::ATTRIBUTION, nullptr, row, col_lex_init);
             break;
-        case 90:
-            current_state = s90_id_tail(c, la);
-            break;
         case 19:
             token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
             break;
+        case 90:
+            current_state = s90_id_tail(c);
+            break;
+        case 91:
+            look_ahead();
+            token = Token(Token::Name::ID, lexeme, row, col);
+            symbolTable.insert(Row(token.value()));
+            break;
+
         default:
             throw LexerException("Transicao nao implementada", row, col, c);
         }
@@ -94,7 +96,7 @@ Token Lexer::next_token() {
     return token.value();
 }
 
-int Lexer::s0_white_space(char c, char look_ahead) {
+int Lexer::s0_white_space(char c) {
     if (std::isspace(c)) {
         lexeme.erase(0, 1);
         return 0;
@@ -117,7 +119,7 @@ int Lexer::s0_white_space(char c, char look_ahead) {
     throw LexerException("Transicao ainda nao implementada", row, col, c);
 };
 
-int Lexer::s3_colon(char c, char look_ahead) {
+int Lexer::s3_colon(char c) {
     if (c == '=')
         return 5;
     else
@@ -125,13 +127,9 @@ int Lexer::s3_colon(char c, char look_ahead) {
     return 3;
 }
 
-int Lexer::s90_id_tail(char c, char look_ahead) {
+int Lexer::s90_id_tail(char c) {
     if (std::isalnum(c) || c == '_') {
-        if (!(std::isalnum(look_ahead) || look_ahead == '_')) {
-            token = Token(Token::Name::ID, lexeme, row, col_lex_init);
-            symbolTable.insert(Row(token.value()));
-        }
         return 90;
     } else
-        throw LexerException("Caractere nao reconhecido", row, col, c);
+        return 91;
 };
