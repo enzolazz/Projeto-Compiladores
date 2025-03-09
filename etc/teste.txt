@@ -11,6 +11,7 @@ programa meu_programa() {%
         2 + 2;
     %} elseif [ pi = 3 ] then {%
         seila(pi);
+        {##}
     %}
     while [ numero2 < numero1 ] do
         numero2 := numero2 + 1;

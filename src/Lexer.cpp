@@ -108,9 +108,10 @@ Token Lexer::next_token() {
             current_state = 16;
             break;
         case 16:
-            if (c == '\'')
+            if (c == '\'') {
                 token = Token(Token::Name::CARACTERE, lexeme[1], row, col_lex_init);
-            else
+                symbolTable.insert(Row(token.value()));
+            } else
                 throw LexerException("Caractere não reconhecido", row, col, c);
             break;
         case 20:
@@ -611,6 +612,7 @@ int Lexer::s20_num(char c) {
 int Lexer::s26_num_f(char c) {
     look_ahead();
     token = Token(Token::Name::NUM, lexeme, row, col);
+    symbolTable.insert(Row(token.value()));
     return -1;
 }
 
