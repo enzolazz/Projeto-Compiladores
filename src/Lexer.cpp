@@ -246,6 +246,9 @@ int Lexer::s0_white_space(char c) {
         return 35;
     case '>':
         return 39;
+    case '=':
+        token = Token(Token::Name::RELOP, Token::RelOp::EQ, row, col);
+        return -1;
     default:
         if (c >= '0' && c <= '9')
             return 20;
