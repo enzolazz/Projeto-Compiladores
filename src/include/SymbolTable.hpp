@@ -24,10 +24,10 @@ class SymbolTable {
  public:
     SymbolTable();
 
-    void insert(Row row);
-    size_type get_pos_lexeme(const std::string& lexeme) const;
+    size_type insert(Row row);
+    size_type get_pos_lexeme(const std::string &lexeme) const;
 
-    const Row& operator[](size_type pos) const;
+    const Row &operator[](size_type pos) const;
 
-    Row& operator[](size_type pos);
+    Row &operator[](size_type pos);
 };

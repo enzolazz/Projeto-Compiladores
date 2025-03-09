@@ -350,6 +350,70 @@ Token Lexer::next_token() {
                 token = Token(Token::Name::TYPE, Token::Type::CHAR, row, col_lex_init);
             }
             break;
+        case 70:
+            if (c == 'r')
+                current_state = 71;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 71:
+            if (c == 'o')
+                current_state = 72;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 72:
+            if (c == 'g')
+                current_state = 73;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 73:
+            if (c == 'r')
+                current_state = 74;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 74:
+            if (c == 'a')
+                current_state = 75;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 75:
+            if (c == 'm')
+                current_state = 76;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 76:
+            if (c == 'a')
+                current_state = 77;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 77:
+            if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                token = Token(Token::Name::PROGRAMA, nullptr, row, col_lex_init);
+            }
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -433,6 +497,8 @@ int Lexer::s0_white_space(char c) {
         return 59;
     case 'c':
         return 65;
+    case 'p':
+        return 70;
     default:
         if (c >= '0' && c <= '9')
             return 20;

@@ -1,16 +1,3 @@
-e
-el
-else
-elsei
-elseif
-elseif2
-
-i
-in
-int[]
-if
-if2 float fl float2
-
 programa meu_programa() {%
     char: a;
     float: numero1, numero2;
