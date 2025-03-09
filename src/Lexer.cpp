@@ -21,7 +21,7 @@ Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
 }
 
 char Lexer::next_char() {
-    if (isEOF())
+    if (isEOF()) [[unlikely]]
         return '\n';
 
     char ret;
@@ -44,7 +44,7 @@ char Lexer::next_char() {
 }
 
 void Lexer::look_ahead() {
-    if (lexeme.empty())
+    if (lexeme.empty()) [[unlikely]]
         throw std::logic_error("Look ahead utilizado quando lexema era vazio. Nao ha nada para reverter");
 
     next_pos--;
@@ -101,6 +101,15 @@ Token Lexer::next_token() {
                 current_state = 0;
                 lexeme = {};
             }
+            break;
+        case 15:
+            current_state = 16;
+            break;
+        case 16:
+            if (c == '\'')
+                token = Token(Token::Name::CARACTERE, lexeme[1], row, col);
+            else
+                throw LexerException("Caractere não reconhecido", row, col, c);
             break;
         case 19:
             token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
@@ -180,6 +189,14 @@ int Lexer::s0_white_space(char c) {
         return 6;
     case '{':
         return 8;
+    case ']':
+        token = Token(Token::Name::BRACKET_END, nullptr, row, col);
+        return -1;
+    case '[':
+        token = Token(Token::Name::BRACKET_START, nullptr, row, col);
+        return -1;
+    case '\'':
+        return 15;
     default:
         if (c >= '0' && c <= '9')
             return 20;

@@ -1,6 +1,15 @@
-{%
-    zero: sla := 1.23a; {# Comentario de
+programa meu_programa() {%
+    char: a;
+    float: numero1, numero2;
+    a := 'a';
+    numero2 := 432E-9;
+    numero1 := 1.23; {# Comentario de
     # multiplas linhas.
     #}
-    while
+    while [ numero2 < numero1 ] do
+        numero2 := numero2 + 1;
+    if [ a <> 'b' ] then {%
+        {# Fazer alguma coisa #}
+        2 + 2;
+    %}
 %}

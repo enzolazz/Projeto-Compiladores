@@ -96,8 +96,10 @@ std::string Token::to_string() const {
     auto str = '<' + Token::to_string(id);
     if (id >= Name::PROGRAMA && id <= Name::BRACKET_END)
         ;
-    else if (id >= Name::ID && id <= Name::CARACTERE)
+    else if (id == Name::ID || id == Name::NUM)
         str += ", " + std::any_cast<std::string>(attribute);
+    else if (id == Name::CARACTERE)
+        str += std::string(", ") + std::any_cast<char>(attribute);
     else if (id == Name::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute));
     else if (id == Name::TYPE)
