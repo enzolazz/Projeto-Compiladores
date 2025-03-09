@@ -6,10 +6,12 @@ programa meu_programa() {%
     numero1 := 1.23; {# Comentario de
     # multiplas linhas.
     #}
-    while [ numero2 < numero1 ] do
-        numero2 := numero2 + 1;
     if [ a <> 'b' ] then {%
         {# Fazer alguma coisa #}
         2 + 2;
+    %} elseif [ pi = 3 ] then {%
+        seila(pi);
     %}
+    while [ numero2 < numero1 ] do
+        numero2 := numero2 + 1;
 %}

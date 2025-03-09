@@ -1,6 +1,7 @@
 #include "Lexer.hpp"
 #include "SymbolTable.hpp"
 #include "Token.hpp"
+#include "debug.hpp"
 #include "exception/LexerException.hpp"
 #include <cctype>
 #include <fstream>
@@ -9,14 +10,14 @@
 
 Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
     : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
-      eofAt(-1) {
+      eofAt({-1, -1}) {
     source.read(buffers[0], BUFFER_SIZE);
     if (source.gcount() != BUFFER_SIZE)
-        eofAt = source.gcount();
+        eofAt = {0, source.gcount()};
     else {
         source.read(buffers[1], BUFFER_SIZE);
         if (source.gcount() != BUFFER_SIZE)
-            eofAt = source.gcount();
+            eofAt = {1, source.gcount()};
     }
 }
 
@@ -28,7 +29,7 @@ char Lexer::next_char() {
     if (next_pos == BUFFER_SIZE) {
         source.read(buffers[active_buffer], BUFFER_SIZE);
         if (source.gcount() != BUFFER_SIZE)
-            eofAt = source.gcount();
+            eofAt = {active_buffer, source.gcount()};
         active_buffer ^= 1;
         ret = buffers[active_buffer][0];
         next_pos = 1;
@@ -37,7 +38,7 @@ char Lexer::next_char() {
         ++next_pos;
     }
 
-    if (next_pos == eofAt)
+    if (next_pos == std::get<1>(eofAt) && active_buffer == std::get<0>(eofAt))
         eof = true;
 
     return ret;
@@ -414,6 +415,38 @@ Token Lexer::next_token() {
                 token = Token(Token::Name::PROGRAMA, nullptr, row, col_lex_init);
             }
             break;
+        case 79:
+            if (c == 'h')
+                current_state = 80;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 80:
+            if (c == 'e')
+                current_state = 81;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 81:
+            if (c == 'n')
+                current_state = 82;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 82:
+            if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                token = Token(Token::Name::THEN, nullptr, row, col_lex_init);
+            }
+            break;
         case 90:
             current_state = s90_id_tail(c);
             break;
@@ -448,8 +481,9 @@ int Lexer::s0_white_space(char c) {
     case ';':
         token = Token(Token::Name::END_SENTENCE, nullptr, row, col_lex_init);
         return -1;
-    case '%':
+    case '%': {
         return 6;
+    }
     case '{':
         return 8;
     case ']':
@@ -499,6 +533,8 @@ int Lexer::s0_white_space(char c) {
         return 65;
     case 'p':
         return 70;
+    case 't':
+        return 79;
     default:
         if (c >= '0' && c <= '9')
             return 20;

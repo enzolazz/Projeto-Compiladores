@@ -4,6 +4,7 @@
 #include "Token.hpp"
 #include <fstream>
 #include <optional>
+#include <tuple>
 
 class Lexer {
  public:
@@ -19,7 +20,7 @@ class Lexer {
     int next_pos;
 
     bool eof;
-    int eofAt;
+    std::tuple<int, int> eofAt;
 
     std::optional<Token> token;
     std::string lexeme;
