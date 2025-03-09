@@ -229,10 +229,26 @@ Token Lexer::next_token() {
         case 48:
             if (c == 'i')
                 current_state = 50;
-            if (isValidIdChar(c))
+            else if (isValidIdChar(c))
                 current_state = 90;
             else
                 token = Token(Token::Name::ELSE, nullptr, row, col_lex_init);
+            break;
+        case 50:
+            if (c == 'f')
+                current_state = 51;
+            else if (isValidIdChar(c))
+                current_state = 90;
+            else {
+                look_ahead();
+                current_state = 90;
+            }
+            break;
+        case 51:
+            if (isValidIdChar(c))
+                current_state = 90;
+            else
+                token = Token(Token::Name::ELSEIF, nullptr, row, col_lex_init);
             break;
         case 90:
             current_state = s90_id_tail(c);

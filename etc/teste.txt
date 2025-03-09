@@ -1,3 +1,10 @@
+e
+el
+else
+elsei
+elseif
+elseif2
+
 programa meu_programa() {%
     char: a;
     float: numero1, numero2;
