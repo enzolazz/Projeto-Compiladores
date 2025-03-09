@@ -7,7 +7,52 @@
 #include <stdexcept>
 #include <string>
 
-static char to_char(const std::string &lexeme) {
+constexpr static signed char eof_c = -1;
+
+Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
+    : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
+      eof(false) {
+    source.read(buffers[0], BUFFER_SIZE);
+    if (source.gcount() != BUFFER_SIZE)
+        buffers[active_buffer][source.gcount()] = eof_c;
+    else {
+        source.read(buffers[1], BUFFER_SIZE);
+        if (source.gcount() != BUFFER_SIZE)
+            buffers[active_buffer][source.gcount()] = eof_c;
+    }
+}
+
+signed char Lexer::next_char() {
+    signed char ret;
+    if (next_pos == BUFFER_SIZE) {
+        source.read(buffers[active_buffer], BUFFER_SIZE);
+        if (source.gcount() != BUFFER_SIZE)
+            buffers[active_buffer][source.gcount()] = eof_c;
+        active_buffer ^= 1;
+        ret = buffers[active_buffer][0];
+        next_pos = 1;
+    } else {
+        ret = buffers[active_buffer][next_pos];
+        ++next_pos;
+    }
+
+    return ret;
+}
+
+void Lexer::look_ahead() {
+    if (lexeme.empty()) [[unlikely]]
+        throw std::logic_error("Look ahead utilizado quando lexema era vazio. Nao ha nada para reverter");
+
+    next_pos--;
+    col--;
+    if (buffers[active_buffer][next_pos] == '\n')
+        row--;
+    lexeme.pop_back();
+}
+
+static bool isValidIdChar(signed char c) { return std::isalnum(c) || c == '_'; }
+
+static signed char to_char(const std::string &lexeme) {
     if (lexeme[1] == '\\') {
         switch (lexeme[2]) {
         case 'a':
@@ -31,66 +76,18 @@ static char to_char(const std::string &lexeme) {
     return lexeme[1];
 }
 
-Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
-    : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
-      eofAt({-1, -1}) {
-    source.read(buffers[0], BUFFER_SIZE);
-    if (source.gcount() != BUFFER_SIZE)
-        eofAt = {0, source.gcount()};
-    else {
-        source.read(buffers[1], BUFFER_SIZE);
-        if (source.gcount() != BUFFER_SIZE)
-            eofAt = {1, source.gcount()};
-    }
-}
-
-char Lexer::next_char() {
-    if (isEOF()) [[unlikely]]
-        return '\n';
-
-    char ret;
-    if (next_pos == BUFFER_SIZE) {
-        source.read(buffers[active_buffer], BUFFER_SIZE);
-        if (source.gcount() != BUFFER_SIZE && std::get<0>(eofAt) < 0)
-            eofAt = {active_buffer, source.gcount()};
-        active_buffer ^= 1;
-        ret = buffers[active_buffer][0];
-        next_pos = 1;
-    } else {
-        ret = buffers[active_buffer][next_pos];
-        ++next_pos;
-    }
-
-    if (next_pos == std::get<1>(eofAt) && active_buffer == std::get<0>(eofAt))
-        eof = true;
-
-    return ret;
-}
-
-void Lexer::look_ahead() {
-    if (lexeme.empty()) [[unlikely]]
-        throw std::logic_error("Look ahead utilizado quando lexema era vazio. Nao ha nada para reverter");
-
-    next_pos--;
-    col--;
-    if (buffers[active_buffer][next_pos] == '\n')
-        row--;
-    lexeme.pop_back();
-}
-
-bool Lexer::isEOF() const noexcept { return eof; }
-
-static bool isValidIdChar(char c) { return std::isalnum(c) || c == '_'; }
-
-Token Lexer::next_token() {
+std::optional<Token> Lexer::next_token() {
     int current_state = 0;
     token = {};
     lexeme = {};
 
     while (!token.has_value()) {
-        char c = next_char();
+        signed char c = next_char();
 
         lexeme += c;
+
+        if (eof)
+            return {};
 
         switch (current_state) {
         case 0:
@@ -119,6 +116,8 @@ Token Lexer::next_token() {
         case 10:
             if (c == '#')
                 current_state = 11;
+            else if (c == eof_c)
+                throw LexerException("Fim inesperado do arquivo", row, col, ' ');
             else
                 current_state = 10;
             break;
@@ -539,10 +538,14 @@ Token Lexer::next_token() {
         }
     }
 
-    return token.value();
+    return token;
 }
 
-int Lexer::s0_white_space(char c) {
+int Lexer::s0_white_space(signed char c) {
+    if (c == eof_c) {
+        eof = true;
+        return 0;
+    }
     if (std::isspace(c)) {
         lexeme.pop_back();
         return 0;
@@ -624,7 +627,7 @@ int Lexer::s0_white_space(char c) {
     throw LexerException("Transicao ainda nao implementada", row, col, c);
 };
 
-int Lexer::s3_colon(char c) {
+int Lexer::s3_colon(signed char c) {
     if (c == '=')
         return 5;
     else {
@@ -634,7 +637,7 @@ int Lexer::s3_colon(char c) {
     }
 }
 
-int Lexer::s20_num(char c) {
+int Lexer::s20_num(signed char c) {
     if (c >= '0' && c <= '9')
         return 20;
     else if (c == '.')
@@ -646,14 +649,14 @@ int Lexer::s20_num(char c) {
     }
 }
 
-int Lexer::s26_num_f(char c) {
+int Lexer::s26_num_f(signed char c) {
     look_ahead();
     token = Token(Token::Name::NUM, lexeme, row, col);
     symbolTable.insert(Row(token.value()));
     return -1;
 }
 
-int Lexer::s90_id_tail(char c) {
+int Lexer::s90_id_tail(signed char c) {
     if (isValidIdChar(c)) {
         return 90;
     } else {
@@ -662,4 +665,4 @@ int Lexer::s90_id_tail(char c) {
         symbolTable.insert(Row(token.value()));
         return -1;
     }
-};
+}

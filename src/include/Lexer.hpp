@@ -18,21 +18,18 @@ class Lexer {
     unsigned short active_buffer;
     size_type row, col, col_lex_init;
     int next_pos;
-
     bool eof;
-    std::tuple<int, int> eofAt;
 
     std::optional<Token> token;
     std::string lexeme;
 
-    char next_char();
+    signed char next_char();
     void look_ahead();
 
-    using state_type = int(char);
+    using state_type = int(signed char);
     state_type s0_white_space, s3_colon, s20_num, s26_num_f, s90_id_tail;
 
  public:
     Lexer(std::ifstream &source, SymbolTable &symbolTable);
-    Token next_token();
-    bool isEOF() const noexcept;
+    std::optional<Token> next_token();
 };

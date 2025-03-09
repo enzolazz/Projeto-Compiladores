@@ -113,7 +113,7 @@ std::string Token::to_string() const {
     else if (id == Name::ID || id == Name::NUM)
         str += ", " + std::any_cast<std::string>(attribute);
     else if (id == Name::CARACTERE)
-        str += std::string(", ") + std::any_cast<char>(attribute);
+        str += std::string(", ") + std::to_string(std::any_cast<signed char>(attribute));
     else if (id == Name::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute));
     else if (id == Name::TYPE)

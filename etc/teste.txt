@@ -1,59 +1,498 @@
-programa TesteCompilador()
+programa TesteComplexo500Linhas()
 {%
-  int: a, b, cont;
-  float: x, y;
-  char: c, d;
+  int: a, b, c, i, j, k, count, temp, result, sum;
+  float: x, y, z, average;
+  char: ch, delim;
 
-  a := 10, 12 , 6546 , 555555 ,                                                                        6,
-
-
-
-
-
-
-
-1  ;
+  a := 10;
   b := 20;
-  x := 3.14;
-  y := 2.71;
-  c := 'Z';
-  d := '\n';
+  c := 30;
+  i := 0;
+  j := 0;
+  k := 0;
+  count := 0;
+  temp := 0;
+  result := 0;
+  sum := 0;
 
-  cont := 0;
+  x := 1.1;
+  y := 2.2;
+  z := 3.3;
+  average := 0.0;
 
-  {# Este é umvas;d lgvmweg poqer~/g]´meg~wt´h ´wrth ´]em bl~çk df~çndçn dgn ]l# comentário de teste #}
+  ch := 'A';
+  delim := ' ';
 
-  if [ a < b ] then
-      a := a + 1;
-  elseif [ a = b ] then
-      b := b - 1;
-  else
-      a := a - 1;
-
-  while [ cont < 5 ] do
-      cont := cont + 1;
-
-  while [ cont >= 5 ] do
-      if [ cont > 7 ] then
-          cont := cont - 1;
+  {# Início do laço externo para iteração geral #}
+  while [ i < 5 ] do
+    {%
+      a := a + i;
+      b := b + 2 * i;
+      c := c - i;
+      {# Bloco de condição aninhado 1 #}
+      if [ a > b ] then
+         a := a - 1;
+      elseif [ a = b ] then
+         a := a + 1;
       else
-          cont := cont + 2;
+         b := b + 1;
+      
+      {# Bloco de repetição interno #}
+      j := 0;
+      while [ j < 3 ] do
+         {%
+           {# Bloco if-elseif-else aninhado #}
+           if [ c < 0 ] then
+             {%
+               c := c * -1;
+               ch := 'X';
+             %}
+           elseif [ c = 0 ] then
+             {%
+               c := 1;
+               ch := 'Y';
+             %}
+           else
+             {%
+               c := c;
+               ch := 'Z';
+             %}
+           
+           {# Atualização de variáveis internas #}
+           j := j + 1;
+         %}
+      
+      {# Segundo bloco de condições #}
+      if [ x < y ] then
+         {%
+           x := x + 0.5;
+         %}
+      elseif [ x = y ] then
+         {%
+           x := x * 1.1;
+         %}
+      else
+         {%
+           y := y * 0.9;
+         %}
+      
+      {# Bloco de doWhile #}
+      do
+         {%
+           z := z + 0.1;
+         %}
+      while [ z < 4.0 ];
+      
+      {# Atualizando variável externa #}
+      i := i + 1;
+    %}
 
-  do
-      x := x * 2;
-  while [ x <= y ];
+  {# Bloco principal de cálculos #}
+  sum := a + b + c;
+  result := sum * 2;
 
-  a := (a + b) * (cont - 1) / 2;
-  x := x ** 2;
-
-  {% 
-    int: z;
-    z := a;
-    if [ z >= 10 ] then
-        z := z - 10;
+  {# Bloco aninhado para processamento de dados #}
+  {%
+    int: m, n;
+    m := 100;
+    n := 200;
+    if [ m < n ] then
+      {%
+        m := m + 10;
+      %}
+    elseif [ m = n ] then
+      {%
+        m := m;
+      %}
     else
-        z := z + 10;
+      {%
+        m := m - 10;
+      %}
+    
+    {# Laço while interno #}
+    while [ m < n ] do
+      {%
+         m := m + 5;
+         if [ m > n ] then
+           {%
+              m := n;
+           %}
+         else
+           {%
+              m := m;
+           %}
+      %}
+    
+    sum := sum + m + n;
   %}
 
-  y := y + 0.5;
+  {# Bloco de repetição com várias condições #}
+  k := 10;
+  while [ k > 0 ] do
+    {%
+      if [ k mod 2 = 0 ] then
+         {%
+           result := result + k;
+         %}
+      elseif [ k mod 3 = 0 ] then
+         {%
+           result := result - k;
+         %}
+      else
+         {%
+           result := result * 1;
+         %}
+      k := k - 1;
+    %}
+
+  {# Bloco aninhado extenso para testar múltiplas condições #}
+  {%
+    int: p, q, r;
+    p := 0;
+    q := 0;
+    r := 0;
+    
+    {# Laço para simular operações complexas #}
+    while [ p < 10 ] do
+      {%
+         {# Condição múltipla usando if, elseif e else #}
+         if [ p < 3 ] then
+           {%
+              q := q + 1;
+           %}
+         elseif [ p < 7 ] then
+           {%
+              q := q + 2;
+           %}
+         else
+           {%
+              q := q + 3;
+           %}
+         
+         {# Laço interno com doWhile #}
+         do
+           {%
+              r := r + 1;
+              if [ r mod 5 = 0 ] then
+                {%
+                   r := r - 2;
+                %}
+              elseif [ r mod 4 = 0 ] then
+                {%
+                   r := r - 1;
+                %}
+              else
+                {%
+                   r := r;
+                %}
+           %}
+         while [ r < 15 ];
+         
+         p := p + 1;
+      %}
+    
+    result := result + p + q + r;
+  %}
+
+  {# Bloco final de validação e ajustes #}
+  if [ result >= 500 ] then
+    {%
+      result := result - 500;
+      {# Bloco aninhado de validação #}
+      if [ result < 100 ] then
+        {%
+          result := result + 50;
+        %}
+      elseif [ result >= 100 and result < 200 ] then
+        {%
+          result := result + 30;
+        %}
+      else
+        {%
+          result := result + 10;
+        %}
+    %}
+  else
+    {%
+      result := result + 100;
+      {# Bloco aninhado com várias condições #}
+      if [ result mod 2 = 0 ] then
+        {%
+          result := result / 2;
+        %}
+      else
+        {%
+          result := result * 3;
+        %}
+    %}
+
+  {# Início de vários blocos aninhados para aumentar o tamanho do programa #}
+  {%
+    int: a1, a2, a3, a4, a5;
+    a1 := 1;
+    a2 := 2;
+    a3 := 3;
+    a4 := 4;
+    a5 := 5;
+    
+    if [ a1 < a2 ] then
+      {%
+        a1 := a1 + 10;
+        if [ a1 < a3 ] then
+          {%
+            a1 := a1 + 5;
+          %}
+        elseif [ a1 = a3 ] then
+          {%
+            a1 := a1 + 3;
+          %}
+        else
+          {%
+            a1 := a1 + 1;
+          %}
+      %}
+    else
+      {%
+        a1 := a1 - 10;
+      %}
+    
+    if [ a2 < a3 ] then
+      {%
+        a2 := a2 * 2;
+      %}
+    elseif [ a2 = a3 ] then
+      {%
+        a2 := a2 * 3;
+      %}
+    else
+      {%
+        a2 := a2 * 4;
+      %}
+    
+    if [ a3 < a4 ] then
+      {%
+        a3 := a3 + a1;
+      %}
+    else
+      {%
+        a3 := a3 - a1;
+      %}
+    
+    if [ a4 < a5 ] then
+      {%
+        a4 := a4 + a2;
+      %}
+    elseif [ a4 = a5 ] then
+      {%
+        a4 := a4 + a3;
+      %}
+    else
+      {%
+        a4 := a4 - a3;
+      %}
+    
+    if [ a5 < a1 ] then
+      {%
+        a5 := a5 + a4;
+      %}
+    else
+      {%
+        a5 := a5 - a4;
+      %}
+  %}
+
+  {# Bloco com laços de repetição e condições aninhadas para iterar sobre uma sequência #}
+  {%
+    int: seq, aux;
+    seq := 1;
+    
+    while [ seq <= 20 ] do
+      {%
+         if [ seq mod 2 = 0 ] then
+           {%
+              aux := seq * 2;
+              if [ aux > 20 ] then
+                {%
+                   aux := 20;
+                %}
+              else
+                {%
+                   aux := aux;
+                %}
+           %}
+         elseif [ seq mod 3 = 0 ] then
+           {%
+              aux := seq * 3;
+           %}
+         else
+           {%
+              aux := seq + 5;
+           %}
+         seq := seq + 1;
+      %}
+  %}
+
+  {# Bloco aninhado para processamento de string (simulação com char) #}
+  {%
+    char: ch1, ch2, ch3;
+    ch1 := 'A';
+    ch2 := 'B';
+    ch3 := 'C';
+    
+    if [ ch1 = 'A' ] then
+      {%
+         ch1 := 'Z';
+         if [ ch2 = 'B' ] then
+            {%
+               ch2 := 'Y';
+            %}
+         else
+            {%
+               ch2 := 'X';
+            %}
+      %}
+    else
+      {%
+         ch1 := 'M';
+      %}
+  %}
+
+  {# Bloco extenso de repetição aninhada para gerar maior complexidade #}
+  {%
+    int: outer, inner, sumInner;
+    outer := 0;
+    sumInner := 0;
+    
+    while [ outer < 15 ] do
+      {%
+         inner := 0;
+         while [ inner < 10 ] do
+           {%
+              sumInner := sumInner + inner;
+              if [ inner mod 2 = 0 ] then
+                {%
+                   sumInner := sumInner + 5;
+                %}
+              elseif [ inner mod 3 = 0 ] then
+                {%
+                   sumInner := sumInner - 3;
+                %}
+              else
+                {%
+                   sumInner := sumInner;
+                %}
+              inner := inner + 1;
+           %}
+         if [ sumInner > 50 ] then
+           {%
+              outer := outer + 2;
+           %}
+         else
+           {%
+              outer := outer + 1;
+           %}
+      %}
+    result := result + sumInner;
+  %}
+
+  {# Bloco para simular operações matemáticas avançadas #}
+  {%
+    int: i1, i2, i3, calc;
+    i1 := 2;
+    i2 := 3;
+    calc := 0;
+    
+    while [ i1 < 50 ] do
+      {%
+         i3 := 0;
+         while [ i3 < 5 ] do
+           {%
+              calc := calc + (i1 * i2) - i3;
+              if [ calc mod 7 = 0 ] then
+                {%
+                   calc := calc / 2;
+                %}
+              else
+                {%
+                   calc := calc + 1;
+                %}
+              i3 := i3 + 1;
+           %}
+         i1 := i1 + 1;
+      %}
+    result := result + calc;
+  %}
+
+  {# Bloco de repetição com doWhile para simulação de controle de fluxo #}
+  {%
+    int: d1, d2, d3;
+    d1 := 10;
+    d2 := 0;
+    
+    do
+      {%
+         d2 := d2 + 3;
+         if [ d2 > 15 ] then
+           {%
+              d2 := d2 - 2;
+           %}
+         else
+           {%
+              d2 := d2 + 1;
+           %}
+      %}
+    while [ d2 < 20 ];
+    result := result + d2;
+  %}
+
+  {# Bloco final para ajustes e resultados finais #}
+  {%
+    float: finalResult;
+    finalResult := x + y + z + average;
+    if [ finalResult > 100.0 ] then
+      {%
+         finalResult := finalResult / 2.0;
+      %}
+    elseif [ finalResult = 100.0 ] then
+      {%
+         finalResult := finalResult * 1.5;
+      %}
+    else
+      {%
+         finalResult := finalResult + 10.0;
+      %}
+    result := result + finalResult;
+  %}
+
+  {# Gerando linhas extras para atingir 500 linhas #}
+  
+  {%
+    int: extra1, extra2, extra3, extra4, extra5;
+    extra1 := 1;
+    extra2 := 2;
+    extra3 := 3;
+    extra4 := 4;
+    extra5 := 5;
+    
+    if [ extra1 < extra2 ] then
+      {%
+         extra1 := extra1 + 10;
+         if [ extra1 < extra3 ] then
+           {%
+              extra1 := extra1 + 5;
+           %}
+         elseif [ extra1 = extra3 ] then
+           {%
+              extra1 := extra1 + 3;
+           %}
+         else
+           {%
+              extra1 := extra1 + 1;
+           %}
+      %}
+    else
+      {%
+         extra1 := extra1 - 10;
+      %}
+  %}
 %}

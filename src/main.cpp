@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <ostream>
 
 int main(int argc, char *argv[]) {
     using namespace std;
@@ -24,8 +25,7 @@ int main(int argc, char *argv[]) {
     SymbolTable symbolTable;
     Lexer lex(source, symbolTable);
 
-    while (!lex.isEOF()) {
-        Token tok = lex.next_token();
-        cout << "Token lido: " << tok.to_string() << endl;
+    for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
+        cout << "Token lido: " << tok.value().to_string() << endl;
     }
 }
