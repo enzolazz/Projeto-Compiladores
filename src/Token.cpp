@@ -20,7 +20,7 @@ std::string Token::to_string(Name type) {
         return "WHILE";
     case Name::DO:
         return "DO";
-    case Name::ATTRIBUITION:
+    case Name::ATTRIBUTION:
         return "ATTRIBUTION";
     case Name::BLOCO_START:
         return "BLOCO_START";

@@ -12,7 +12,7 @@ struct Token {
         ELSEIF,
         WHILE,
         DO,
-        ATTRIBUITION,
+        ATTRIBUTION,
         BLOCO_START,
         BLOCO_END,
         END_SENTENCE,

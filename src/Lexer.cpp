@@ -97,7 +97,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = s3_colon(c);
             break;
         case 5:
-            token = Token(Token::Name::ATTRIBUITION, nullptr, row, col_lex_init);
+            token = Token(Token::Name::ATTRIBUTION, nullptr, row, col_lex_init);
             break;
         case 6:
             if (c == '}')
