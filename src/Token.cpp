@@ -108,19 +108,19 @@ std::string Token::to_string(OpSomaSub op) {
 }
 
 std::string Token::to_string() const {
-    auto str = '<' + Token::to_string(id);
-    if (id >= Name::PROGRAMA && id <= Name::BRACKET_END)
+    auto str = '<' + Token::to_string(name);
+    if (name >= Name::PROGRAMA && name <= Name::BRACKET_END)
         ;
-    else if (id == Name::ID || id == Name::NUM || id == Name::CARACTERE) {
+    else if (name == Name::ID || name == Name::NUM || name == Name::CARACTERE) {
         auto pos = std::any_cast<SymbolTable::size_type>(attribute);
         str += ", " + std::to_string(pos);
-    } else if (id == Name::RELOP)
+    } else if (name == Name::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute));
-    else if (id == Name::TYPE)
+    else if (name == Name::TYPE)
         str += ", " + to_string(std::any_cast<Type>(attribute));
-    else if (id == Name::OPMULDIV)
+    else if (name == Name::OPMULDIV)
         str += ", " + to_string(std::any_cast<OpMulDiv>(attribute));
-    else if (id == Name::OPSOMASUB)
+    else if (name == Name::OPSOMASUB)
         str += ", " + to_string(std::any_cast<OpSomaSub>(attribute));
     else
         str += ", nao implementado";

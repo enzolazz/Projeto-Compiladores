@@ -30,17 +30,13 @@ int main(int argc, char *argv[]) {
 
     for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
         cout << "Token lido: " << tok.value().to_string();
-        switch (tok->id) {
+        switch (tok->name) {
         case Token::Name::ID:
         case Token::Name::NUM:
-            cout << " Lexema: "
-                 << std::any_cast<std::string>(
-                        symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].value);
+            cout << " Lexema: " << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].lexeme;
             break;
         case Token::Name::CARACTERE:
-            cout << " Lexema: "
-                 << std::any_cast<signed char>(
-                        symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].value);
+            cout << " Lexema: " << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].lexeme;
             break;
         default:
             break;

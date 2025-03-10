@@ -9,12 +9,16 @@
 
 struct Row {
     const Token &token;
+    std::string lexeme;
     Token::Type coerced_id_type;
     std::any value;
 
+    Row(Token &token, std::string lexeme);
+    Row(Token &token, signed char lexeme);
+
     template <typename T> std::string to_string(bool print_token, std::function<std::string(T)> to_str) const {
-        return (print_token ? token.to_string() : "") + "coerced_id_type: " + Token::to_string(coerced_id_type) +
-               ", value: " + to_str(std::any_cast<T>(value));
+        return (print_token ? token.to_string() : "") + "lexeme: " + lexeme +
+               "coerced_id_type: " + Token::to_string(coerced_id_type) + ", value: " + to_str(std::any_cast<T>(value));
     }
 
     template <typename T> std::string to_string(bool print_token) const {

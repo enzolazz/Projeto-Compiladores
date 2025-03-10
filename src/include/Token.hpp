@@ -43,7 +43,7 @@ struct Token {
     static std::string to_string(OpSomaSub);
     std::string to_string() const;
 
-    Name id;
+    Name name;
     std::any attribute;
     int row;
     int col;
