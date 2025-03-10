@@ -557,9 +557,6 @@ int Lexer::s0_white_space(signed char c) {
     }
     col_lex_init = col;
 
-    // TODO Este é o primeiro estado do diagrama, após descartar os caracteres white space, fazer a transição
-    // para todos outros estados fingindo que estamos lendo o primeiro caractere.
-
     switch (c) {
     case ':':
         return 3;
