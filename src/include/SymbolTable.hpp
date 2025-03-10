@@ -16,22 +16,7 @@ struct Row {
     Row(Token &token, std::string lexeme);
     Row(Token &token, signed char lexeme);
 
-    template <typename T> std::string to_string(bool print_token, std::function<std::string(T)> to_str) const {
-        return (print_token ? token.to_string() : "") + "lexeme: " + lexeme +
-               "coerced_id_type: " + Token::to_string(coerced_id_type) + ", value: " + to_str(std::any_cast<T>(value));
-    }
-
-    template <typename T> std::string to_string(bool print_token) const {
-        return to_string<T>(print_token, std::to_string);
-    }
-
-    template <> std::string to_string<std::string>(bool print_token) const {
-        return to_string<std::string>(print_token, std::identity());
-    }
-
-    template <> std::string to_string<signed char>(bool print_token) const {
-        return to_string<signed char>(print_token, [](auto c) { return std::string(1, c); });
-    }
+    std::string to_string() const;
 };
 
 class SymbolTable {
