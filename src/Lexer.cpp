@@ -128,7 +128,9 @@ std::optional<Token> Lexer::next_token() {
             }
             break;
         case 15:
-            if (c == '\\')
+            if (c == eof_c)
+                throw LexerException("Fim inesperado do arquivo", row, col, c);
+            else if (c == '\\')
                 current_state = 16;
             else if (c != '\\' && c != '\'' && c != '\n')
                 current_state = 17;
@@ -162,7 +164,7 @@ std::optional<Token> Lexer::next_token() {
             else if (c == 'E')
                 current_state = 23;
             else {
-                current_state = s26_num_f(0);
+                current_state = s26_num_f(c);
             }
             break;
         case 23:
@@ -183,7 +185,7 @@ std::optional<Token> Lexer::next_token() {
             if (c >= '0' && c <= '9')
                 current_state = 25;
             else
-                current_state = s26_num_f(0);
+                current_state = s26_num_f(c);
             break;
         case 28:
             if (c == '*')
@@ -536,6 +538,9 @@ std::optional<Token> Lexer::next_token() {
             row++;
             col = 1;
         }
+
+        if (c == eof_c)
+            eof = true;
     }
 
     return token;
@@ -645,7 +650,7 @@ int Lexer::s20_num(signed char c) {
     else if (c == 'E')
         return 23;
     else {
-        return s26_num_f(0);
+        return s26_num_f(c);
     }
 }
 
