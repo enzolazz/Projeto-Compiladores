@@ -117,7 +117,7 @@ std::optional<Token> Lexer::next_token() {
             if (c == '#')
                 current_state = 11;
             else if (c == eof_c)
-                throw LexerException("Fim inesperado do arquivo", row, col, ' ');
+                throw LexerException("Fim inesperado do arquivo", row, col, eof_c);
             else
                 current_state = 10;
             break;

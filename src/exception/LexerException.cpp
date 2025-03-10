@@ -9,7 +9,7 @@ static std::string translate_char(signed char c) {
     case '\n':
         return "\\n";
     default:
-        return std::to_string(c);
+        return std::string(1, c);
     }
 }
 

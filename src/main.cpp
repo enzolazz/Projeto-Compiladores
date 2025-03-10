@@ -33,12 +33,14 @@ int main(int argc, char *argv[]) {
         switch (tok->id) {
         case Token::Name::ID:
         case Token::Name::NUM:
-            cout << " Linha da tabela: "
-                 << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string<std::string>(false);
+            cout << " Lexema: "
+                 << std::any_cast<std::string>(
+                        symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].value);
             break;
         case Token::Name::CARACTERE:
-            cout << " Tabela: "
-                 << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string<signed char>(false);
+            cout << " Lexema: "
+                 << std::any_cast<signed char>(
+                        symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].value);
             break;
         default:
             break;
