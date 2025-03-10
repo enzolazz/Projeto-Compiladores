@@ -4,7 +4,6 @@
 #include "Token.hpp"
 #include <fstream>
 #include <optional>
-#include <tuple>
 
 class Lexer {
  public:
