@@ -27,18 +27,15 @@ int main(int argc, char *argv[]) {
     Lexer lex(source, symbolTable);
 
     for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
-        cout << "Token lido: " << tok.value().to_string();
         switch (tok->name) {
         case Token::Name::ID:
         case Token::Name::NUM:
-            cout << " Linha da tabela: "
-                 << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string();
-            break;
         case Token::Name::CARACTERE:
-            cout << " Linha da tabela: "
+            cout << "Linha da tabela: "
                  << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string();
             break;
         default:
+            cout << "Token lido: " << tok.value().to_string();
             break;
         }
         cout << endl;

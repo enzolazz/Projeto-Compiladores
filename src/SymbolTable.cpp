@@ -17,6 +17,7 @@ Row::Row(Token &token, std::string lexeme) : token(token), lexeme(lexeme) {
             coerced_id_type = Token::Type::INT;
         }
     } else if (token.name == Token::Name::CARACTERE) {
+        value = lexeme;
         coerced_id_type = Token::Type::CHAR;
     }
 }
@@ -24,15 +25,24 @@ Row::Row(Token &token, std::string lexeme) : token(token), lexeme(lexeme) {
 Row::Row(Token &token, signed char lexeme) : Row(token, std::string(1, lexeme)) {}
 
 std::string Row::to_string() const {
-    auto ret = "lexeme: " + lexeme;
-    if (token.name == Token::Name::NUM)
-        ret += " type: " + Token::to_string(coerced_id_type) + " value: " +
-               (coerced_id_type == Token::Type::INT ? std::to_string(std::any_cast<int>(value))
-                                                    : std::to_string(std::any_cast<float>(value)));
-    else if (token.name == Token::Name::CARACTERE)
-        ret += " type: " + Token::to_string(coerced_id_type);
+    std::string s = "Lexeme: " + lexeme + "; Token: " + token.to_string();
 
-    return ret;
+    if (token.name == Token::Name::NUM || token.name == Token::Name::CARACTERE) {
+        s += "; CoercedIdType: " + Token::to_string(coerced_id_type) + "; Value: ";
+        switch (coerced_id_type) {
+        case Token::Type::FLOAT:
+            s += std::to_string(std::any_cast<float>(value));
+            break;
+        case Token::Type::CHAR:
+            s += std::any_cast<std::string>(value);
+            break;
+        case Token::Type::INT:
+            s += std::to_string(std::any_cast<int>(value));
+            break;
+        }
+    }
+
+    return s;
 }
 
 SymbolTable::size_type SymbolTable::insert(const Row row) {
