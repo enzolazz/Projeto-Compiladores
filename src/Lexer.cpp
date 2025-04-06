@@ -76,6 +76,7 @@ static signed char to_char(const std::string &lexeme) {
     return lexeme[1];
 }
 
+// optional.has_value() == false;
 std::optional<Token> Lexer::next_token() {
     int current_state = 0;
     token = {};
@@ -525,10 +526,13 @@ std::optional<Token> Lexer::next_token() {
         case 90:
             current_state = s90_id_tail(c);
             break;
-        case 93:
+        case 93: {
             token = Token(Token::Name::CARACTERE, nullptr, row, col_lex_init);
-            token->attribute = symbolTable.insert(Row(token.value(), to_char(lexeme)));
+            auto index = symbolTable.insert(Row(token.value(), to_char(lexeme)));
+            symbolTable[index].token.attribute = index;
+            token = symbolTable[index].token;
             break;
+        }
         default:
             throw LexerException("Estado nao implementado: " + std::to_string(current_state), row, col, c);
         }
@@ -654,7 +658,9 @@ int Lexer::s20_num(signed char c) {
 int Lexer::s26_num_f(signed char c) {
     look_ahead();
     token = Token(Token::Name::NUM, nullptr, row, col);
-    token->attribute = symbolTable.insert(Row(token.value(), lexeme));
+    auto index = symbolTable.insert(Row(token.value(), lexeme));
+    symbolTable[index].token.attribute = index;
+    token = symbolTable[index].token;
     return -1;
 }
 
@@ -664,7 +670,9 @@ int Lexer::s90_id_tail(signed char c) {
     } else {
         look_ahead();
         token = Token(Token::Name::ID, nullptr, row, col);
-        token->attribute = symbolTable.insert(Row(token.value(), lexeme));
+        auto index = symbolTable.insert(Row(token.value(), lexeme));
+        symbolTable[index].token.attribute = index;
+        token = symbolTable[index].token;
         return -1;
     }
 }

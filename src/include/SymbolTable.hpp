@@ -7,13 +7,13 @@
 #include <vector>
 
 struct Row {
-    const Token &token;
+    Token token;
     std::string lexeme;
     Token::Type coerced_id_type;
     std::any value;
 
-    Row(Token &token, std::string lexeme);
-    Row(Token &token, signed char lexeme);
+    Row(Token token, std::string lexeme);
+    Row(Token token, signed char lexeme);
 
     std::string to_string() const;
 };

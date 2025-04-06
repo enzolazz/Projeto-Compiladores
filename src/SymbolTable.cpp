@@ -7,7 +7,7 @@
 
 SymbolTable::SymbolTable() = default;
 
-Row::Row(Token &token, std::string lexeme) : token(token), lexeme(lexeme) {
+Row::Row(Token token, std::string lexeme) : token(token), lexeme(lexeme) {
     if (token.name == Token::Name::NUM) {
         if (lexeme.find('.') != std::string::npos || lexeme.find('E') != std::string::npos) {
             value = std::stof(lexeme);
@@ -22,7 +22,7 @@ Row::Row(Token &token, std::string lexeme) : token(token), lexeme(lexeme) {
     }
 }
 
-Row::Row(Token &token, signed char lexeme) : Row(token, std::string(1, lexeme)) {}
+Row::Row(Token token, signed char lexeme) : Row(token, std::string(1, lexeme)) {}
 
 std::string Row::to_string() const {
     std::string s = "Lexeme: " + lexeme + "; Token: " + token.to_string();
