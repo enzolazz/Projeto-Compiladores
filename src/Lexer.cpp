@@ -190,10 +190,10 @@ std::optional<Token> Lexer::next_token() {
             break;
         case 28:
             if (c == '*')
-                token = Token(Token::Name::OPPOT, nullptr, row, col_lex_init);
+                token = Token(Token::Name::POW, nullptr, row, col_lex_init);
             else {
                 look_ahead();
-                token = Token(Token::Name::OPMULDIV, Token::OpMulDiv::MUL, row, col_lex_init);
+                token = Token(Token::Name::MUL, nullptr, row, col_lex_init);
             }
             break;
         case 35:
@@ -527,8 +527,8 @@ std::optional<Token> Lexer::next_token() {
             current_state = s90_id_tail(c);
             break;
         case 93: {
-            token = Token(Token::Name::CARACTERE, nullptr, row, col_lex_init);
-            auto index = symbolTable.insert(Row(token.value(), to_char(lexeme)));
+            token = Token(Token::Name::CONST, nullptr, row, col_lex_init);
+            auto index = symbolTable.insert(Row(token.value(), lexeme));
             symbolTable[index].token.attribute = index;
             token = symbolTable[index].token;
             break;
@@ -584,15 +584,15 @@ int Lexer::s0_white_space(signed char c) {
         token = Token(Token::Name::COMMA, nullptr, row, col);
         return -1;
     case '/':
-        token = Token(Token::Name::OPMULDIV, Token::OpMulDiv::DIV, row, col);
+        token = Token(Token::Name::DIV, nullptr, row, col);
         return -1;
     case '*':
         return 28;
     case '+':
-        token = Token(Token::Name::OPSOMASUB, Token::OpSomaSub::SOMA, row, col);
+        token = Token(Token::Name::SUM, nullptr, row, col);
         return -1;
     case '-':
-        token = Token(Token::Name::OPSOMASUB, Token::OpSomaSub::SUB, row, col);
+        token = Token(Token::Name::SUB, nullptr, row, col);
         return -1;
     case ')':
         token = Token(Token::Name::PAR_END, nullptr, row, col);
@@ -657,7 +657,7 @@ int Lexer::s20_num(signed char c) {
 
 int Lexer::s26_num_f(signed char c) {
     look_ahead();
-    token = Token(Token::Name::NUM, nullptr, row, col);
+    token = Token(Token::Name::CONST, nullptr, row, col);
     auto index = symbolTable.insert(Row(token.value(), lexeme));
     symbolTable[index].token.attribute = index;
     token = symbolTable[index].token;

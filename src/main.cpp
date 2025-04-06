@@ -29,8 +29,7 @@ int main(int argc, char *argv[]) {
     for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
         switch (tok->name) {
         case Token::Name::ID:
-        case Token::Name::NUM:
-        case Token::Name::CARACTERE:
+        case Token::Name::CONST:
             cout << "Linha da tabela: "
                  << symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string();
             break;

@@ -5,6 +5,7 @@
 
 struct Token {
     enum class Name : short {
+        END_OF_FILE,
         PROGRAMA,
         IF,
         THEN,
@@ -13,34 +14,31 @@ struct Token {
         WHILE,
         DO,
         ATTRIBUTION,
+        SUM,
+        SUB,
+        MUL,
+        DIV,
+        POW,
         BLOCO_START,
         BLOCO_END,
         END_SENTENCE,
         COLON,
         COMMA,
-        OPPOT,
         PAR_START,
         PAR_END,
         BRACKET_START,
         BRACKET_END,
         ID,
-        NUM,
-        CARACTERE,
+        CONST,
         RELOP,
-        TYPE,
-        OPSOMASUB,
-        OPMULDIV
+        TYPE
     };
     enum class RelOp : short { LT, LE, EQ, NE, GE, GT };
     enum class Type : short { INT, FLOAT, CHAR };
-    enum class OpMulDiv : short { MUL, DIV };
-    enum class OpSomaSub : short { SOMA, SUB };
 
     static std::string to_string(Name);
     static std::string to_string(RelOp);
     static std::string to_string(Type);
-    static std::string to_string(OpMulDiv);
-    static std::string to_string(OpSomaSub);
     std::string to_string() const;
 
     Name name;

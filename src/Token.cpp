@@ -42,20 +42,22 @@ std::string Token::to_string(Name type) {
         return "BRACKET_END";
     case Name::ID:
         return "ID";
-    case Name::NUM:
-        return "NUM";
-    case Name::CARACTERE:
-        return "CARACTERE";
+    case Name::CONST:
+        return "CONST";
     case Name::RELOP:
         return "RELOP";
     case Name::TYPE:
         return "TIPO";
-    case Name::OPSOMASUB:
-        return "OPSOMASUB";
-    case Name::OPMULDIV:
-        return "OPMULDIV";
-    case Name::OPPOT:
-        return "OPPOT";
+    case Name::SUM:
+        return "SUM";
+    case Name::SUB:
+        return "SUB";
+    case Name::MUL:
+        return "MUL";
+    case Name::DIV:
+        return "DIV";
+    case Name::POW:
+        return "POW";
     default:
         throw std::invalid_argument("Unknown Token Id");
     }
@@ -93,35 +95,17 @@ std::string Token::to_string(Type type) {
     }
 }
 
-std::string Token::to_string(OpMulDiv op) {
-    if (op == OpMulDiv::DIV)
-        return "DIV";
-    else
-        return "MUL";
-}
-
-std::string Token::to_string(OpSomaSub op) {
-    if (op == OpSomaSub::SOMA)
-        return "SOMA";
-    else
-        return "SUB";
-}
-
 std::string Token::to_string() const {
     auto str = '<' + Token::to_string(name);
     if (name >= Name::PROGRAMA && name <= Name::BRACKET_END)
         ;
-    else if (name == Name::ID || name == Name::NUM || name == Name::CARACTERE) {
+    else if (name == Name::ID || name == Name::CONST) {
         auto pos = std::any_cast<SymbolTable::size_type>(attribute);
         str += ", " + std::to_string(pos);
     } else if (name == Name::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute));
     else if (name == Name::TYPE)
         str += ", " + to_string(std::any_cast<Type>(attribute));
-    else if (name == Name::OPMULDIV)
-        str += ", " + to_string(std::any_cast<OpMulDiv>(attribute));
-    else if (name == Name::OPSOMASUB)
-        str += ", " + to_string(std::any_cast<OpSomaSub>(attribute));
     else
         str += ", nao implementado";
 

@@ -8,17 +8,17 @@
 SymbolTable::SymbolTable() = default;
 
 Row::Row(Token token, std::string lexeme) : token(token), lexeme(lexeme) {
-    if (token.name == Token::Name::NUM) {
-        if (lexeme.find('.') != std::string::npos || lexeme.find('E') != std::string::npos) {
+    if (token.name == Token::Name::CONST) {
+        if (lexeme[0] == '\'') {
+            value = lexeme;
+            coerced_id_type = Token::Type::CHAR;
+        } else if (lexeme.find('.') != std::string::npos || lexeme.find('E') != std::string::npos) {
             value = std::stof(lexeme);
             coerced_id_type = Token::Type::FLOAT;
         } else {
             value = std::stoi(lexeme);
             coerced_id_type = Token::Type::INT;
         }
-    } else if (token.name == Token::Name::CARACTERE) {
-        value = lexeme;
-        coerced_id_type = Token::Type::CHAR;
     }
 }
 
@@ -27,7 +27,7 @@ Row::Row(Token token, signed char lexeme) : Row(token, std::string(1, lexeme)) {
 std::string Row::to_string() const {
     std::string s = "Lexeme: " + lexeme + "; Token: " + token.to_string();
 
-    if (token.name == Token::Name::NUM || token.name == Token::Name::CARACTERE) {
+    if (token.name == Token::Name::CONST) {
         s += "; CoercedIdType: " + Token::to_string(coerced_id_type) + "; Value: ";
         switch (coerced_id_type) {
         case Token::Type::FLOAT:
