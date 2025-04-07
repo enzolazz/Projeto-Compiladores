@@ -1,0 +1,80 @@
+programa TesteComplexo500Linhas()
+{%
+  int: a, b, c, i, j, k, count, temp, result, sum;
+  float: x, y, z, average;
+  char: ch, delim;
+
+  a := 10;
+  b := 20;
+  c := 30;
+  i := 0;
+  j := 0;
+  k := 0;
+  count := 0;
+  temp := 0;
+  result := 0;
+  sum := 0;
+
+  x := 1.1;
+  y := 2.2;
+  z := 3.3;
+  average := 0.0;
+
+  ch := 'A';
+  delim := ' ';
+
+  {# Início do laço externo para iteração geral #}
+  while [ i < 5 ] do
+    {%
+      a := a + i;
+      b := b + 2 * i;
+      c := c - i;
+      {# Bloco de condição aninhado 1 #}
+      if [ a > b ] then
+         a := a - 1;
+      elseif [ a = b ] then
+         a := a + 1;
+      else
+         b := b + 1;
+      
+      {# Bloco de repetição interno #}
+      j := 0;
+      while [ j < 3 ] do
+         {%
+           {# Bloco if-elseif-else aninhado #}
+           if [ c < 0 ] then
+             {%
+               c := c * -1;
+               ch := 'X';
+             %}
+           elseif [ c = 0 ] then
+             {%
+               c := 1;
+               ch := 'Y';
+             %}
+           else
+             {%
+               c := c;
+               ch := 'Z';
+             %}
+           
+           {# Atualização de variáveis internas #}
+           j := j + 1;
+         %}
+      
+      {# Segundo bloco de condições #}
+      if [ x < y ] then
+         {%
+           x := x + 0.5;
+         %}
+      elseif [ x = y ] then
+         {%
+           x := x * 1.1;
+         %}
+      else
+         {%
+           y := y * 0.9;
+         %}
+         int: ino;
+         ino := 0;
+%}

@@ -95,18 +95,19 @@ std::optional<Token> Lexer::next_token() {
         case 0:
             nc();
             if (std::isspace(c)) {
-                lexeme = {};
-                // lexeme.pop_back();
+                lexeme.pop_back();
                 current_state = 1;
             } else
                 current_state = s0_inicio_token(c);
             break;
         case 1:
             nc();
-            if (std::isspace(c))
-                break;
-            else
+            if (std::isspace(c)) {
+                lexeme.pop_back();
+                current_state = 1;
+            } else
                 current_state = 2;
+            break;
         case 2:
             look_ahead();
             current_state = 0;
@@ -122,6 +123,7 @@ std::optional<Token> Lexer::next_token() {
             look_ahead();
             token = Token(Token::Name::COLON, nullptr, row, col_lex_init);
             current_state = -1;
+            break;
         case 5:
             nc();
             token = Token(Token::Name::ATTRIBUTION, nullptr, row, col_lex_init);
@@ -224,9 +226,8 @@ std::optional<Token> Lexer::next_token() {
                 current_state = 22;
             else if (c == 'E')
                 current_state = 23;
-            else {
-                current_state = s26_num_f(c);
-            }
+            else
+                current_state = 26;
             break;
         case 23:
             nc();
@@ -249,12 +250,17 @@ std::optional<Token> Lexer::next_token() {
             if (c >= '0' && c <= '9')
                 current_state = 25;
             else
-                current_state = s26_num_f(c);
+                current_state = 26;
             break;
-        case 26:
+        case 26: {
             look_ahead();
-            current_state = s26_num_f(c);
+            token = Token(Token::Name::CONST, nullptr, row, col);
+            auto index = symbolTable.insert(Row(token.value(), lexeme));
+            symbolTable[index].token.attribute = index;
+            token = symbolTable[index].token;
+            current_state = -1;
             break;
+        }
         case 27:
             token = Token(Token::Name::DIV, nullptr, row, col);
             current_state = -1;
@@ -263,9 +269,8 @@ std::optional<Token> Lexer::next_token() {
             nc();
             if (c == '*')
                 current_state = 30;
-            else {
+            else
                 current_state = 29;
-            }
             break;
         case 29:
             look_ahead();
@@ -336,7 +341,7 @@ std::optional<Token> Lexer::next_token() {
             if (c == 'o')
                 current_state = 43;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 43:
             nc();
@@ -355,30 +360,28 @@ std::optional<Token> Lexer::next_token() {
             if (c == 'l')
                 current_state = 46;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 46:
             nc();
             if (c == 's')
                 current_state = 47;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 47:
             nc();
             if (c == 'e')
                 current_state = 48;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 48:
             nc();
             if (c == 'i')
                 current_state = 50;
-            else if (isValidIdChar(c))
-                current_state = 90;
             else
-                current_state = 49;
+                current_state = s90_id_tail(c);
             break;
         case 49:
             look_ahead();
@@ -390,7 +393,7 @@ std::optional<Token> Lexer::next_token() {
             if (c == 'f')
                 current_state = 51;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 51:
             nc();
@@ -411,7 +414,7 @@ std::optional<Token> Lexer::next_token() {
             else if (c == 'n')
                 current_state = 56;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 54:
             nc();
@@ -430,7 +433,7 @@ std::optional<Token> Lexer::next_token() {
             if (c == 't')
                 current_state = 57;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 57:
             nc();
@@ -448,232 +451,207 @@ std::optional<Token> Lexer::next_token() {
             if (c == 'l')
                 current_state = 60;
             else
-                current_state = 90;
+                current_state = s90_id_tail(c);
             break;
         case 60:
             nc();
             if (c == 'o')
                 current_state = 61;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 61:
             nc();
             if (c == 'a')
                 current_state = 62;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 62:
             nc();
             if (c == 't')
                 current_state = 63;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 63:
             nc();
             if (isValidIdChar(c))
                 current_state = 90;
-            else {
-                look_ahead();
-                token = Token(Token::Name::TYPE, Token::Type::FLOAT, row, col_lex_init);
-            }
+            else
+                current_state = 64;
+            break;
+        case 64:
+            look_ahead();
+            token = Token(Token::Name::TYPE, Token::Type::FLOAT, row, col_lex_init);
+            current_state = -1;
             break;
         case 65:
             nc();
             if (c == 'h')
                 current_state = 66;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 66:
             nc();
             if (c == 'a')
                 current_state = 67;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 67:
             nc();
             if (c == 'r')
                 current_state = 68;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 68:
             nc();
             if (isValidIdChar(c))
                 current_state = 90;
-            else {
-                look_ahead();
-                token = Token(Token::Name::TYPE, Token::Type::CHAR, row, col_lex_init);
-            }
+            else
+                current_state = 69;
+            break;
+        case 69:
+            look_ahead();
+            token = Token(Token::Name::TYPE, Token::Type::CHAR, row, col_lex_init);
+            current_state = -1;
             break;
         case 70:
             nc();
             if (c == 'r')
                 current_state = 71;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 71:
             nc();
             if (c == 'o')
                 current_state = 72;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 72:
             nc();
             if (c == 'g')
                 current_state = 73;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 73:
             nc();
             if (c == 'r')
                 current_state = 74;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 74:
             nc();
             if (c == 'a')
                 current_state = 75;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 75:
             nc();
             if (c == 'm')
                 current_state = 76;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 76:
             nc();
             if (c == 'a')
                 current_state = 77;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 77:
             nc();
             if (isValidIdChar(c))
                 current_state = 90;
-            else {
-                look_ahead();
-                token = Token(Token::Name::PROGRAMA, nullptr, row, col_lex_init);
-            }
+            else
+                current_state = 78;
+            break;
+        case 78:
+            look_ahead();
+            token = Token(Token::Name::PROGRAMA, nullptr, row, col_lex_init);
+            current_state = -1;
             break;
         case 79:
             nc();
             if (c == 'h')
                 current_state = 80;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 80:
             nc();
             if (c == 'e')
                 current_state = 81;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 81:
             nc();
             if (c == 'n')
                 current_state = 82;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 82:
             nc();
             if (isValidIdChar(c))
                 current_state = 90;
-            else {
-                look_ahead();
-                token = Token(Token::Name::THEN, nullptr, row, col_lex_init);
-            }
+            else
+                current_state = 83;
+            break;
+        case 83:
+            look_ahead();
+            token = Token(Token::Name::THEN, nullptr, row, col_lex_init);
+            current_state = -1;
             break;
         case 84:
             nc();
             if (c == 'h')
                 current_state = 85;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 85:
             nc();
             if (c == 'i')
                 current_state = 86;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 86:
             nc();
             if (c == 'l')
                 current_state = 87;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 87:
             nc();
             if (c == 'e')
                 current_state = 88;
-            else {
-                look_ahead();
-                current_state = 90;
-            }
+            else
+                current_state = s90_id_tail(c);
             break;
         case 88:
             nc();
             if (isValidIdChar(c))
                 current_state = 90;
-            else {
-                look_ahead();
-                token = Token(Token::Name::WHILE, nullptr, row, col_lex_init);
-            }
+            else
+                current_state = 89;
+            break;
+        case 89:
+            look_ahead();
+            token = Token(Token::Name::WHILE, nullptr, row, col_lex_init);
+            current_state = -1;
             break;
         case 90:
             nc();
@@ -728,9 +706,8 @@ int Lexer::s0_inicio_token(signed char c) {
         return 3;
     case ';':
         return 19;
-    case '%': {
+    case '%':
         return 6;
-    }
     case '{':
         return 8;
     case ']':
@@ -794,14 +771,6 @@ int Lexer::s20_num(signed char c) {
         return 23;
     else
         return 26;
-}
-
-int Lexer::s26_num_f(signed char c) {
-    token = Token(Token::Name::CONST, nullptr, row, col);
-    auto index = symbolTable.insert(Row(token.value(), lexeme));
-    symbolTable[index].token.attribute = index;
-    token = symbolTable[index].token;
-    return -1;
 }
 
 int Lexer::s90_id_tail(signed char c) {
