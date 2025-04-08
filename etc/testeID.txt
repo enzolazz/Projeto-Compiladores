@@ -36,7 +36,7 @@ programa TesteComplexo500Linhas()
          a := a + 1;
       else
          b := b + 1;
-      
+      int: teste;
       {# Bloco de repetição interno #}
       j := 0;
       while [ j < 3 ] do

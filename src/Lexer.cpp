@@ -4,6 +4,7 @@
 #include "exception/LexerException.hpp"
 #include <cctype>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -12,23 +13,26 @@ constexpr static signed char eof_c = -1;
 Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
     : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
       eof(false) {
-    source.read(buffers[0], BUFFER_SIZE);
+    source.read(buffers[active_buffer], BUFFER_SIZE);
     if (source.gcount() != BUFFER_SIZE)
         buffers[active_buffer][source.gcount()] = eof_c;
-    else {
-        source.read(buffers[1], BUFFER_SIZE);
-        if (source.gcount() != BUFFER_SIZE)
-            buffers[active_buffer][source.gcount()] = eof_c;
-    }
+    // else {
+    //     source.read(buffers[1], BUFFER_SIZE);
+    //     if (source.gcount() != BUFFER_SIZE)
+    //         buffers[active_buffer][source.gcount()] = eof_c;
+    // }
 }
 
 signed char Lexer::next_char() {
     signed char ret;
     if (next_pos == BUFFER_SIZE) {
+        active_buffer ^= 1;
+
+        std::cout << "\nBuffer " << active_buffer << " lido\n" << std::endl;
+
         source.read(buffers[active_buffer], BUFFER_SIZE);
         if (source.gcount() != BUFFER_SIZE)
             buffers[active_buffer][source.gcount()] = eof_c;
-        active_buffer ^= 1;
         ret = buffers[active_buffer][0];
         next_pos = 1;
     } else {
@@ -44,9 +48,10 @@ void Lexer::look_ahead() {
         throw std::logic_error("Look ahead utilizado quando lexema era vazio. Nao ha nada para reverter");
 
     next_pos--;
-    col--;
-    if (buffers[active_buffer][next_pos] == '\n')
+    if (buffers[active_buffer][next_pos] == '\n') {
         row--;
+    }
+    col--;
     lexeme.pop_back();
 }
 
@@ -682,7 +687,7 @@ std::optional<Token> Lexer::next_token() {
         }
 
         col++;
-        if (c == '\n') {
+        if (c == '\n' && !token.has_value()) {
             row++;
             col = 1;
         }
