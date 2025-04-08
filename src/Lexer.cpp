@@ -684,11 +684,9 @@ std::optional<Token> Lexer::next_token() {
             throw LexerException("Estado nao implementado: " + std::to_string(current_state), row, col, c);
         }
 
-        if (!token.has_value()) {
-            if (c == '\n') {
-                row++;
-                col = 1;
-            }
+        if (!token.has_value() && c == '\n') {
+            row++;
+            col = 1;
         }
 
         if (c == eof_c)
