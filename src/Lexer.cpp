@@ -32,6 +32,8 @@ signed char Lexer::next_char() {
         ++next_pos;
     }
 
+    col++;
+
     return ret;
 }
 
@@ -40,10 +42,11 @@ void Lexer::look_ahead() {
         throw std::logic_error("Look ahead utilizado quando lexema era vazio. Nao ha nada para reverter");
 
     next_pos--;
-    if (buffers[active_buffer][next_pos] == '\n') {
-        row--;
-    }
     col--;
+
+    if (buffers[active_buffer][next_pos] == '\n')
+        row--;
+
     lexeme.pop_back();
 }
 
@@ -90,6 +93,7 @@ std::optional<Token> Lexer::next_token() {
 
         switch (current_state) {
         case 0:
+            col_lex_init = col;
             nc();
             if (std::isspace(c)) {
                 lexeme.pop_back();
@@ -165,11 +169,11 @@ std::optional<Token> Lexer::next_token() {
             lexeme = {};
             break;
         case 13:
-            token = Token(Token::Name::BRACKET_END, nullptr, row, col);
+            token = Token(Token::Name::BRACKET_END, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 14:
-            token = Token(Token::Name::BRACKET_START, nullptr, row, col);
+            token = Token(Token::Name::BRACKET_START, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 15:
@@ -198,7 +202,7 @@ std::optional<Token> Lexer::next_token() {
                 throw LexerException("Caractere inesperado", row, col, c);
             break;
         case 18:
-            token = Token(Token::Name::COMMA, nullptr, row, col);
+            token = Token(Token::Name::COMMA, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 19:
@@ -250,7 +254,7 @@ std::optional<Token> Lexer::next_token() {
             break;
         case 26: {
             look_ahead();
-            token = Token(Token::Name::CONST, nullptr, row, col);
+            token = Token(Token::Name::CONST, nullptr, row, col_lex_init);
             auto index = symbolTable.insert(Row(token.value(), lexeme));
             symbolTable[index].token.attribute = index;
             token = symbolTable[index].token;
@@ -258,7 +262,7 @@ std::optional<Token> Lexer::next_token() {
             break;
         }
         case 27:
-            token = Token(Token::Name::DIV, nullptr, row, col);
+            token = Token(Token::Name::DIV, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 28:
@@ -278,19 +282,19 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 31:
-            token = Token(Token::Name::SUM, nullptr, row, col);
+            token = Token(Token::Name::SUM, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 32:
-            token = Token(Token::Name::SUB, nullptr, row, col);
+            token = Token(Token::Name::SUB, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 33:
-            token = Token(Token::Name::PAR_END, nullptr, row, col);
+            token = Token(Token::Name::PAR_END, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 34:
-            token = Token(Token::Name::PAR_START, nullptr, row, col);
+            token = Token(Token::Name::PAR_START, nullptr, row, col_lex_init);
             current_state = -1;
             break;
         case 35:
@@ -298,10 +302,13 @@ std::optional<Token> Lexer::next_token() {
             switch (c) {
             case '=':
                 current_state = 38;
+                break;
             case '>':
                 current_state = 36;
+                break;
             default:
                 current_state = 37;
+                break;
             }
             break;
         case 36:
@@ -655,7 +662,7 @@ std::optional<Token> Lexer::next_token() {
             break;
         case 91: {
             look_ahead();
-            token = Token(Token::Name::ID, nullptr, row, col);
+            token = Token(Token::Name::ID, nullptr, row, col_lex_init);
             auto index = symbolTable.insert(Row(token.value(), lexeme));
             symbolTable[index].token.attribute = index;
             token = symbolTable[index].token;
@@ -663,7 +670,7 @@ std::optional<Token> Lexer::next_token() {
             break;
         }
         case 92:
-            token = Token(Token::Name::RELOP, Token::RelOp::EQ, row, col);
+            token = Token(Token::Name::RELOP, Token::RelOp::EQ, row, col_lex_init);
             current_state = -1;
             break;
         case 93: {
@@ -677,10 +684,11 @@ std::optional<Token> Lexer::next_token() {
             throw LexerException("Estado nao implementado: " + std::to_string(current_state), row, col, c);
         }
 
-        col++;
-        if (c == '\n' && !token.has_value()) {
-            row++;
-            col = 1;
+        if (!token.has_value()) {
+            if (c == '\n') {
+                row++;
+                col = 1;
+            }
         }
 
         if (c == eof_c)
@@ -695,7 +703,6 @@ int Lexer::s0_inicio_token(signed char c) {
         eof = true;
         return 0;
     }
-    col_lex_init = col;
 
     switch (c) {
     case ':':

@@ -36,45 +36,6 @@ programa TesteComplexo500Linhas()
          a := a + 1;
       else
          b := b + 1;
-      int: teste;
-      {# Bloco de repetição interno #}
-      j := 0;
-      while [ j < 3 ] do
-         {%
-           {# Bloco if-elseif-else aninhado #}
-           if [ c < 0 ] then
-             {%
-               c := c * -1;
-               ch := 'X';
-             %}
-           elseif [ c = 0 ] then
-             {%
-               c := 1;
-               ch := 'Y';
-             %}
-           else
-             {%
-               c := c;
-               ch := 'Z';
-             %}
-           
-           {# Atualização de variáveis internas #}
-           j := j + 1;
-         %}
-      
-      {# Segundo bloco de condições #}
-      if [ x < y ] then
-         {%
-           x := x + 0.5;
-         %}
-      elseif [ x = y ] then
-         {%
-           x := x * 1.1;
-         %}
-      else
-         {%
-           y := y * 0.9;
-         %}
          int: ino;
          ino := 0;
 %}
