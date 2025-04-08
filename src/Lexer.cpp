@@ -4,7 +4,6 @@
 #include "exception/LexerException.hpp"
 #include <cctype>
 #include <fstream>
-#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -16,19 +15,12 @@ Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
     source.read(buffers[active_buffer], BUFFER_SIZE);
     if (source.gcount() != BUFFER_SIZE)
         buffers[active_buffer][source.gcount()] = eof_c;
-    // else {
-    //     source.read(buffers[1], BUFFER_SIZE);
-    //     if (source.gcount() != BUFFER_SIZE)
-    //         buffers[active_buffer][source.gcount()] = eof_c;
-    // }
 }
 
 signed char Lexer::next_char() {
     signed char ret;
     if (next_pos == BUFFER_SIZE) {
         active_buffer ^= 1;
-
-        std::cout << "\nBuffer " << active_buffer << " lido\n" << std::endl;
 
         source.read(buffers[active_buffer], BUFFER_SIZE);
         if (source.gcount() != BUFFER_SIZE)
@@ -130,7 +122,6 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 5:
-            nc();
             token = Token(Token::Name::ATTRIBUTION, nullptr, row, col_lex_init);
             break;
         case 6:
