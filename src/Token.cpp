@@ -1,8 +1,6 @@
-#include "Token.hpp"
 #include "SymbolTable.hpp"
-#include <any>
+#include "Token.hpp"
 #include <stdexcept>
-#include <string>
 
 std::string Token::to_string(const Name type) {
     switch (type) {

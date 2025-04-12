@@ -1,8 +1,5 @@
 #include "SymbolTable.hpp"
-#include "Token.hpp"
-#include <any>
 #include <stdexcept>
-#include <string>
 
 SymbolTable::SymbolTable() = default;
 

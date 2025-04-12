@@ -7,8 +7,7 @@
 
 class Lexer {
     static constexpr int BUFFER_SIZE = 128;
-    std::ifstream &source;
-    SymbolTable &symbolTable;
+    std::ifstream& source;
     char buffers[2][BUFFER_SIZE];
     unsigned short active_buffer;
     Token::size_type row, col, col_lex_init;
@@ -22,9 +21,10 @@ class Lexer {
     void look_ahead();
 
     using state_type = int(signed char);
-    state_type s0_inicio_token, s3_colon, s20_num, s26_num_f, s90_id_tail;
+    state_type s0_inicio_token, s20_num, s90_id_tail;
 
  public:
-    Lexer(std::ifstream &source, SymbolTable &symbolTable);
+    explicit Lexer(std::ifstream &source);
     std::optional<Token> next_token();
+    SymbolTable symbolTable;
 };

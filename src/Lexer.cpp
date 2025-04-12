@@ -1,16 +1,10 @@
 #include "Lexer.hpp"
-#include "SymbolTable.hpp"
-#include "Token.hpp"
 #include "exception/LexerException.hpp"
-#include <cctype>
-#include <fstream>
-#include <stdexcept>
-#include <string>
 
 constexpr static signed char eof_c = -1;
 
-Lexer::Lexer(std::ifstream &source, SymbolTable &symbolTable)
-    : source(source), symbolTable(symbolTable), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
+Lexer::Lexer(std::ifstream &source)
+    : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
       eof(false) {
     source.read(buffers[active_buffer], BUFFER_SIZE);
     if (source.gcount() != BUFFER_SIZE)
