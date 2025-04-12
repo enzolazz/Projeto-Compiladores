@@ -6,16 +6,12 @@
 #include <optional>
 
 class Lexer {
- public:
-    using size_type = unsigned long;
-
- private:
     static constexpr int BUFFER_SIZE = 128;
     std::ifstream &source;
     SymbolTable &symbolTable;
     char buffers[2][BUFFER_SIZE];
     unsigned short active_buffer;
-    size_type row, col, col_lex_init;
+    Token::size_type row, col, col_lex_init;
     int next_pos;
     bool eof;
 

@@ -1,13 +1,12 @@
 #include "SymbolTable.hpp"
 #include "Token.hpp"
 #include <any>
-#include <cstdlib>
 #include <stdexcept>
 #include <string>
 
 SymbolTable::SymbolTable() = default;
 
-Row::Row(Token token, std::string lexeme) : token(token), lexeme(lexeme) {
+Row::Row(const Token& token, const std::string& lexeme) : token(token), lexeme(lexeme) {
     if (token.name == Token::Name::CONST) {
         if (lexeme[0] == '\'') {
             value = lexeme;
@@ -22,7 +21,7 @@ Row::Row(Token token, std::string lexeme) : token(token), lexeme(lexeme) {
     }
 }
 
-Row::Row(Token token, signed char lexeme) : Row(token, std::string(1, lexeme)) {}
+Row::Row(const Token& token, const signed char lexeme) : Row(token, std::string(1, lexeme)) {}
 
 std::string Row::to_string() const {
     std::string s = "Lexeme: " + lexeme + "; Token: " + token.to_string();
@@ -45,23 +44,25 @@ std::string Row::to_string() const {
     return s;
 }
 
-SymbolTable::size_type SymbolTable::insert(const Row row) {
-    if (row.token.name == Token::Name::ID) {
-        const std::string lex = std::any_cast<std::string>(row.lexeme);
+Token SymbolTable::insert(Row row) {
+    if (row.token.name == Token::Name::ID || row.token.name == Token::Name::CONST) {
+        const auto lex = std::any_cast<std::string>(row.lexeme);
         try {
-            return lexeme_index.at(lex);
+            const size_type index = lexeme_index.at(lex);
+            return operator[](index).token;
         } catch (std::out_of_range &) {
-            auto index = rows.size();
+            const size_type index = rows.size();
             lexeme_index[lex] = index;
+            row.token.attribute = index;
         }
     }
 
     rows.push_back(row);
-    return rows.size() - 1;
+    return row.token;
 }
 
 SymbolTable::size_type SymbolTable::get_pos_lexeme(const std::string &lexeme) const { return lexeme_index.at(lexeme); }
 
-const Row &SymbolTable::operator[](size_type pos) const { return rows[pos]; }
+const Row &SymbolTable::operator[](const size_type pos) const { return rows[pos]; }
 
-Row &SymbolTable::operator[](size_type pos) { return rows[pos]; }
+Row &SymbolTable::operator[](const size_type pos) { return rows[pos]; }

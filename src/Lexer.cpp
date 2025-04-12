@@ -50,7 +50,7 @@ void Lexer::look_ahead() {
     lexeme.pop_back();
 }
 
-static bool isValidIdChar(signed char c) { return std::isalnum(c) || c == '_'; }
+static bool isValidIdChar(const signed char c) { return std::isalnum(c) || c == '_'; }
 
 static signed char to_char(const std::string &lexeme) {
     if (lexeme[1] == '\\') {
@@ -82,7 +82,7 @@ std::optional<Token> Lexer::next_token() {
     token = {};
     lexeme = {};
     signed char c;
-    const auto nc = [&c, this]() {
+    const auto nc = [&c, this] {
         c = next_char();
         this->lexeme += c;
     };
@@ -254,10 +254,7 @@ std::optional<Token> Lexer::next_token() {
             break;
         case 26: {
             look_ahead();
-            token = Token(Token::Name::CONST, nullptr, row, col_lex_init);
-            auto index = symbolTable.insert(Row(token.value(), lexeme));
-            symbolTable[index].token.attribute = index;
-            token = symbolTable[index].token;
+            token = symbolTable.insert(Row(Token(Token::Name::CONST, nullptr, row, col_lex_init), lexeme));
             current_state = -1;
             break;
         }
@@ -662,10 +659,7 @@ std::optional<Token> Lexer::next_token() {
             break;
         case 91: {
             look_ahead();
-            token = Token(Token::Name::ID, nullptr, row, col_lex_init);
-            auto index = symbolTable.insert(Row(token.value(), lexeme));
-            symbolTable[index].token.attribute = index;
-            token = symbolTable[index].token;
+            token = symbolTable.insert(Row(Token(Token::Name::ID, nullptr, row, col_lex_init), lexeme));
             current_state = -1;
             break;
         }
@@ -674,10 +668,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 93: {
-            token = Token(Token::Name::CONST, nullptr, row, col_lex_init);
-            auto index = symbolTable.insert(Row(token.value(), lexeme));
-            symbolTable[index].token.attribute = index;
-            token = symbolTable[index].token;
+            token = symbolTable.insert(Row(Token(Token::Name::CONST, nullptr, row, col_lex_init), lexeme));
             break;
         }
         default:
@@ -696,7 +687,7 @@ std::optional<Token> Lexer::next_token() {
     return token;
 }
 
-int Lexer::s0_inicio_token(signed char c) {
+int Lexer::s0_inicio_token(const signed char c) {
     if (c == eof_c) {
         eof = true;
         return 0;
@@ -761,23 +752,21 @@ int Lexer::s0_inicio_token(signed char c) {
     }
 
     throw LexerException("Transicao ainda nao implementada", row, col, c);
-};
-
-int Lexer::s20_num(signed char c) {
-    if (c >= '0' && c <= '9')
-        return 20;
-    else if (c == '.')
-        return 21;
-    else if (c == 'E')
-        return 23;
-    else
-        return 26;
 }
 
-int Lexer::s90_id_tail(signed char c) {
-    if (isValidIdChar(c)) {
+int Lexer::s20_num(const signed char c) {
+    if (c >= '0' && c <= '9')
+        return 20;
+    if (c == '.')
+        return 21;
+    if (c == 'E')
+        return 23;
+    return 26;
+}
+
+int Lexer::s90_id_tail(const signed char c) {
+    if (isValidIdChar(c))
         return 90;
-    } else {
-        return 91;
-    }
+
+    return 91;
 }

@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-std::string Token::to_string(Name type) {
+std::string Token::to_string(const Name type) {
     switch (type) {
     case Name::PROGRAMA:
         return "PROGRAMA";
@@ -63,7 +63,7 @@ std::string Token::to_string(Name type) {
     }
 }
 
-std::string Token::to_string(RelOp relop) {
+std::string Token::to_string(const RelOp relop) {
     switch (relop) {
     case RelOp::LT:
         return "LT";
@@ -82,7 +82,7 @@ std::string Token::to_string(RelOp relop) {
     }
 }
 
-std::string Token::to_string(Type type) {
+std::string Token::to_string(const Type type) {
     switch (type) {
     case Type::INT:
         return "INT";
@@ -96,11 +96,11 @@ std::string Token::to_string(Type type) {
 }
 
 std::string Token::to_string() const {
-    auto str = '<' + Token::to_string(name);
+    auto str = '<' + to_string(name);
     if (name >= Name::PROGRAMA && name <= Name::BRACKET_END)
         ;
     else if (name == Name::ID || name == Name::CONST) {
-        auto pos = std::any_cast<SymbolTable::size_type>(attribute);
+        const auto pos = std::any_cast<SymbolTable::size_type>(attribute);
         str += ", " + std::to_string(pos);
     } else if (name == Name::RELOP)
         str += ", " + to_string(std::any_cast<RelOp>(attribute));

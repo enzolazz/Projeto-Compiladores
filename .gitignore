@@ -59,6 +59,7 @@ CMakeUserPresets.json
 # Probable output dirs
 build/
 out/
+*-build-*
 
 # clangd cache
 .cache/

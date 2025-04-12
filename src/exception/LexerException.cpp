@@ -2,18 +2,19 @@
 #include <stdexcept>
 #include <string>
 
-static std::string translate_char(signed char c) {
+static std::string translate_char(const signed char c) {
     switch (c) {
     case -1:
         return "EOF";
     case '\n':
         return "\\n";
     default:
-        return std::string(1, c);
+        return {1, c};
     }
 }
 
-LexerException::LexerException(std::string what, Lexer::size_type row, Lexer::size_type col, signed char c)
+LexerException::LexerException(const std::string& what, const Token::size_type row, const Token::size_type col,
+                               const signed char c)
     : std::runtime_error(what), row(row), col(col), c(c),
 
       what_s(std::string("Char ") + translate_char(c) + " at row " + std::to_string(row) + " col " +

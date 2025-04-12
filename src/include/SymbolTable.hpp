@@ -12,14 +12,13 @@ struct Row {
     Token::Type coerced_id_type;
     std::any value;
 
-    Row(Token token, std::string lexeme);
-    Row(Token token, signed char lexeme);
+    Row(const Token& token, const std::string& lexeme);
+    Row(const Token& token, signed char lexeme);
 
-    std::string to_string() const;
+    [[nodiscard]] std::string to_string() const;
 };
 
 class SymbolTable {
- private:
     std::vector<Row> rows;
 
  public:
@@ -31,7 +30,7 @@ class SymbolTable {
  public:
     SymbolTable();
 
-    size_type insert(const Row row);
+    Token insert(Row row);
     size_type get_pos_lexeme(const std::string &lexeme) const;
 
     const Row &operator[](size_type pos) const;
