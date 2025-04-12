@@ -380,8 +380,10 @@ std::optional<Token> Lexer::next_token() {
             nc();
             if (c == 'i')
                 current_state = 50;
-            else
+            else if (isValidIdChar(c))
                 current_state = s90_id_tail(c);
+            else
+                current_state = 49;
             break;
         case 49:
             look_ahead();
