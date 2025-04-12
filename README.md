@@ -19,8 +19,16 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release # ou Debug
 # Compilar
 cmake --build build # build é o nome do diretório especificado no comando anterior
 ```
-
 Para executar o programa:
 ```shell
 ./build/compilerFront
+```
+
+Também é possível compilar o projeto com o nix
+```shell
+# Apenas compilar
+nix build # o executável está na pasta result/bin
+
+# Compilar e executar
+nix run . # Argumentos do programa vêm aqui na frente
 ```

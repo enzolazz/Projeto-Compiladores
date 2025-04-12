@@ -2,7 +2,7 @@
   description = "Trabalho de compiladores";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -12,6 +12,24 @@
           config.allowUnfree = true;
         };
     in {
+      defaultPackage = pkgs.stdenv.mkDerivation {
+        pname = "compilerFront";
+        version = "0.0.1";
+        src = ./.;
+
+        nativeBuildInputs = with pkgs; [ cmake ];
+
+        meta =   {
+          description = "Trabalho de compiladores";
+          mainProgram = "compilerFront";
+        };
+
+        installPhase = ''
+          mkdir -p $out/bin
+          cp ./compilerFront $out/bin/
+        '';
+      };
+
       devShell = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           clang
