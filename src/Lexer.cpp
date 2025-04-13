@@ -12,23 +12,23 @@ Lexer::Lexer(std::ifstream &source)
 }
 
 signed char Lexer::next_char() {
-    signed char ret;
     if (next_pos == BUFFER_SIZE) {
         active_buffer ^= 1;
 
         source.read(buffers[active_buffer], BUFFER_SIZE);
         if (source.gcount() != BUFFER_SIZE)
             buffers[active_buffer][source.gcount()] = eof_c;
-        ret = buffers[active_buffer][0];
+        c = buffers[active_buffer][0];
         next_pos = 1;
     } else {
-        ret = buffers[active_buffer][next_pos];
+        c = buffers[active_buffer][next_pos];
         ++next_pos;
     }
 
     col++;
+    lexeme += c;
 
-    return ret;
+    return c;
 }
 
 void Lexer::look_ahead() {
@@ -70,16 +70,10 @@ static signed char to_char(const std::string &lexeme) {
     return lexeme[1];
 }
 
-// optional.has_value() == false;
 std::optional<Token> Lexer::next_token() {
     int current_state = 0;
     token = {};
     lexeme = {};
-    signed char c;
-    const auto nc = [&c, this] {
-        c = next_char();
-        this->lexeme += c;
-    };
 
     while (!token.has_value()) {
         if (eof)
@@ -88,7 +82,7 @@ std::optional<Token> Lexer::next_token() {
         switch (current_state) {
         case 0:
             col_lex_init = col;
-            nc();
+            next_char();
             if (std::isspace(c)) {
                 lexeme.pop_back();
                 current_state = 1;
@@ -96,7 +90,7 @@ std::optional<Token> Lexer::next_token() {
                 current_state = s0_inicio_token(c);
             break;
         case 1:
-            nc();
+            next_char();
             if (std::isspace(c)) {
                 lexeme.pop_back();
                 current_state = 1;
@@ -108,7 +102,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = 0;
             break;
         case 3:
-            nc();
+            next_char();
             if (c == '=')
                 current_state = 5;
             else
@@ -123,7 +117,7 @@ std::optional<Token> Lexer::next_token() {
             token = Token(Token::Name::ATTRIBUTION, {}, row, col_lex_init);
             break;
         case 6:
-            nc();
+            next_char();
             if (c == '}')
                 current_state = 7;
             else
@@ -133,7 +127,7 @@ std::optional<Token> Lexer::next_token() {
             token = Token(Token::Name::BLOCO_END, {}, row, col_lex_init);
             break;
         case 8:
-            nc();
+            next_char();
             if (c == '%')
                 current_state = 9;
             else if (c == '#')
@@ -145,7 +139,7 @@ std::optional<Token> Lexer::next_token() {
             token = Token(Token::Name::BLOCO_START, {}, row, col_lex_init);
             break;
         case 10:
-            nc();
+            next_char();
             if (c == '#')
                 current_state = 11;
             else if (c == eof_c)
@@ -154,7 +148,7 @@ std::optional<Token> Lexer::next_token() {
                 current_state = 10;
             break;
         case 11:
-            nc();
+            next_char();
             if (c == '}')
                 current_state = 12;
             break;
@@ -171,7 +165,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 15:
-            nc();
+            next_char();
             if (c == eof_c)
                 throw LexerException("Fim inesperado do arquivo", row, col, c);
             else if (c == '\\')
@@ -182,14 +176,14 @@ std::optional<Token> Lexer::next_token() {
                 throw LexerException("Caractere inesperado", row, col, c);
             break;
         case 16:
-            nc();
+            next_char();
             if (c != '\n' && c != '\t')
                 current_state = 17;
             else
                 throw LexerException("Caractere inesperado", row, col, c);
             break;
         case 17:
-            nc();
+            next_char();
             if (c == '\'')
                 current_state = 93;
             else
@@ -204,18 +198,18 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 20:
-            nc();
+            next_char();
             current_state = s20_num(c);
             break;
         case 21:
-            nc();
+            next_char();
             if (c >= '0' && c <= '9')
                 current_state = 22;
             else
                 throw LexerException("Caractere não reconhecido", row, col, c);
             break;
         case 22:
-            nc();
+            next_char();
             if (c >= '0' && c <= '9')
                 current_state = 22;
             else if (c == 'E')
@@ -224,7 +218,7 @@ std::optional<Token> Lexer::next_token() {
                 current_state = 26;
             break;
         case 23:
-            nc();
+            next_char();
             if (c == '+' || c == '-')
                 current_state = 24;
             else if (c >= '0' && c <= '9')
@@ -233,14 +227,14 @@ std::optional<Token> Lexer::next_token() {
                 throw LexerException("Caractere não reconhecido", row, col, c);
             break;
         case 24:
-            nc();
+            next_char();
             if (c >= '0' && c <= '9')
                 current_state = 25;
             else
                 throw LexerException("Caractere não reconhecido", row, col, c);
             break;
         case 25:
-            nc();
+            next_char();
             if (c >= '0' && c <= '9')
                 current_state = 25;
             else
@@ -257,7 +251,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 28:
-            nc();
+            next_char();
             if (c == '*')
                 current_state = 30;
             else
@@ -289,7 +283,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 35:
-            nc();
+            next_char();
             switch (c) {
             case '=':
                 current_state = 38;
@@ -316,7 +310,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 39:
-            nc();
+            next_char();
             if (c == '=')
                 current_state = 41;
             else
@@ -331,14 +325,14 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 42:
-            nc();
+            next_char();
             if (c == 'o')
                 current_state = 43;
             else
                 current_state = s90_id_tail(c);
             break;
         case 43:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -350,28 +344,28 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 45:
-            nc();
+            next_char();
             if (c == 'l')
                 current_state = 46;
             else
                 current_state = s90_id_tail(c);
             break;
         case 46:
-            nc();
+            next_char();
             if (c == 's')
                 current_state = 47;
             else
                 current_state = s90_id_tail(c);
             break;
         case 47:
-            nc();
+            next_char();
             if (c == 'e')
                 current_state = 48;
             else
                 current_state = s90_id_tail(c);
             break;
         case 48:
-            nc();
+            next_char();
             if (c == 'i')
                 current_state = 50;
             else if (isValidIdChar(c))
@@ -385,14 +379,14 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 50:
-            nc();
+            next_char();
             if (c == 'f')
                 current_state = 51;
             else
                 current_state = s90_id_tail(c);
             break;
         case 51:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -404,7 +398,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 53:
-            nc();
+            next_char();
             if (c == 'f')
                 current_state = 54;
             else if (c == 'n')
@@ -413,7 +407,7 @@ std::optional<Token> Lexer::next_token() {
                 current_state = s90_id_tail(c);
             break;
         case 54:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -425,14 +419,14 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 56:
-            nc();
+            next_char();
             if (c == 't')
                 current_state = 57;
             else
                 current_state = s90_id_tail(c);
             break;
         case 57:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -443,35 +437,35 @@ std::optional<Token> Lexer::next_token() {
             token = Token(Token::Name::TYPE, Token::Type::INT, row, col_lex_init);
             break;
         case 59:
-            nc();
+            next_char();
             if (c == 'l')
                 current_state = 60;
             else
                 current_state = s90_id_tail(c);
             break;
         case 60:
-            nc();
+            next_char();
             if (c == 'o')
                 current_state = 61;
             else
                 current_state = s90_id_tail(c);
             break;
         case 61:
-            nc();
+            next_char();
             if (c == 'a')
                 current_state = 62;
             else
                 current_state = s90_id_tail(c);
             break;
         case 62:
-            nc();
+            next_char();
             if (c == 't')
                 current_state = 63;
             else
                 current_state = s90_id_tail(c);
             break;
         case 63:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -483,28 +477,28 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 65:
-            nc();
+            next_char();
             if (c == 'h')
                 current_state = 66;
             else
                 current_state = s90_id_tail(c);
             break;
         case 66:
-            nc();
+            next_char();
             if (c == 'a')
                 current_state = 67;
             else
                 current_state = s90_id_tail(c);
             break;
         case 67:
-            nc();
+            next_char();
             if (c == 'r')
                 current_state = 68;
             else
                 current_state = s90_id_tail(c);
             break;
         case 68:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -516,56 +510,56 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 70:
-            nc();
+            next_char();
             if (c == 'r')
                 current_state = 71;
             else
                 current_state = s90_id_tail(c);
             break;
         case 71:
-            nc();
+            next_char();
             if (c == 'o')
                 current_state = 72;
             else
                 current_state = s90_id_tail(c);
             break;
         case 72:
-            nc();
+            next_char();
             if (c == 'g')
                 current_state = 73;
             else
                 current_state = s90_id_tail(c);
             break;
         case 73:
-            nc();
+            next_char();
             if (c == 'r')
                 current_state = 74;
             else
                 current_state = s90_id_tail(c);
             break;
         case 74:
-            nc();
+            next_char();
             if (c == 'a')
                 current_state = 75;
             else
                 current_state = s90_id_tail(c);
             break;
         case 75:
-            nc();
+            next_char();
             if (c == 'm')
                 current_state = 76;
             else
                 current_state = s90_id_tail(c);
             break;
         case 76:
-            nc();
+            next_char();
             if (c == 'a')
                 current_state = 77;
             else
                 current_state = s90_id_tail(c);
             break;
         case 77:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -577,28 +571,28 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 79:
-            nc();
+            next_char();
             if (c == 'h')
                 current_state = 80;
             else
                 current_state = s90_id_tail(c);
             break;
         case 80:
-            nc();
+            next_char();
             if (c == 'e')
                 current_state = 81;
             else
                 current_state = s90_id_tail(c);
             break;
         case 81:
-            nc();
+            next_char();
             if (c == 'n')
                 current_state = 82;
             else
                 current_state = s90_id_tail(c);
             break;
         case 82:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -610,35 +604,35 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 84:
-            nc();
+            next_char();
             if (c == 'h')
                 current_state = 85;
             else
                 current_state = s90_id_tail(c);
             break;
         case 85:
-            nc();
+            next_char();
             if (c == 'i')
                 current_state = 86;
             else
                 current_state = s90_id_tail(c);
             break;
         case 86:
-            nc();
+            next_char();
             if (c == 'l')
                 current_state = 87;
             else
                 current_state = s90_id_tail(c);
             break;
         case 87:
-            nc();
+            next_char();
             if (c == 'e')
                 current_state = 88;
             else
                 current_state = s90_id_tail(c);
             break;
         case 88:
-            nc();
+            next_char();
             if (isValidIdChar(c))
                 current_state = 90;
             else
@@ -650,7 +644,7 @@ std::optional<Token> Lexer::next_token() {
             current_state = -1;
             break;
         case 90:
-            nc();
+            next_char();
             current_state = s90_id_tail(c);
             break;
         case 91: {

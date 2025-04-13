@@ -16,6 +16,7 @@ class Lexer {
 
     std::optional<Token> token;
     std::string lexeme;
+    signed char c;
 
     signed char next_char();
     void look_ahead();

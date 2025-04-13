@@ -28,7 +28,7 @@ class SymbolTable {
  public:
     SymbolTable();
 
-    Token insert(Row row);
+    Token& insert(Row row);
     size_type get_pos_lexeme(const std::string &lexeme) const;
 
     const Row &operator[](size_type pos) const;

@@ -41,7 +41,7 @@ std::string Row::to_string() const {
     return s;
 }
 
-Token SymbolTable::insert(Row row) {
+Token& SymbolTable::insert(Row row) {
     if (row.token.name == Token::Name::ID || row.token.name == Token::Name::CONST) {
         const auto lex = std::any_cast<std::string>(row.lexeme);
         try {
