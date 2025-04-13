@@ -7,7 +7,7 @@ programa TesteIDs()
       a := a + 10;
     if [ a < 0 ] then
         a := a + 5.2;
-    elseif [ a = a2 ] then
+    elseif [ a = a2 ] a
         a := a + 3;
     else{%
         a := 

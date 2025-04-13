@@ -13,7 +13,7 @@ struct Row {
     Row(const Token &token, const std::string &lexeme);
     Row(const Token &token, signed char lexeme);
 
-    [[nodiscard]] std::string to_string(unsigned long row, unsigned long col) const;
+    [[nodiscard]] std::string to_string() const;
 };
 
 class SymbolTable {

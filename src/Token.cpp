@@ -94,7 +94,7 @@ std::string Token::to_string(const Type type) {
     }
 }
 
-std::string Token::to_string(unsigned long row, unsigned long col) const {
+std::string Token::to_string() const {
     auto str = '<' + to_string(name);
     if (name >= Name::PROGRAMA && name <= Name::BRACKET_END)
         ;
@@ -108,5 +108,6 @@ std::string Token::to_string(unsigned long row, unsigned long col) const {
     else
         str += ", nao implementado";
 
-    return str + ", row: " + std::to_string(row) + ", col: " + std::to_string(col) + ">";
+    // return str + ", row: " + std::to_string(row) + ", col: " + std::to_string(col) + ">";
+    return str + ">";
 }

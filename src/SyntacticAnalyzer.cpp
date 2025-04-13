@@ -1,4 +1,5 @@
 #include "SyntacticAnalyzer.hpp"
+#include "exception/SyntaticException.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -127,9 +128,9 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
             std::cout << '\n' << std::endl;
             if (*v == nextToken.name) {
                 stack.pop();
-                auto [nextToken, row, col] = lexer.next_token();
+                std::tie(nextToken, row, col) = lexer.next_token();
             } else {
-                std::cerr << Token::to_string(*v) << " != " << Token::to_string(nextToken.name) << std::endl;
+                throw SyntacticException("Token esperado: " + Token::to_string(*v), nextToken, row, col);
                 throw 0;
             }
         } else {

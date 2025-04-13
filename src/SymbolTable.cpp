@@ -20,8 +20,8 @@ Row::Row(const Token &token, const std::string &lexeme) : token(token), lexeme(l
 
 Row::Row(const Token &token, const signed char lexeme) : Row(token, std::string(1, lexeme)) {}
 
-std::string Row::to_string(unsigned long row, unsigned long col) const {
-    std::string s = "Lexeme: " + lexeme + "; Token: " + token.to_string(row, col);
+std::string Row::to_string() const {
+    std::string s = "Lexeme: " + lexeme + "; Token: " + token.to_string();
 
     if (token.name == Token::Name::CONST) {
         s += "; CoercedIdType: " + Token::to_string(coerced_id_type) + "; Value: ";

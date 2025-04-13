@@ -39,7 +39,7 @@ struct Token {
     static std::string to_string(Name);
     static std::string to_string(RelOp);
     static std::string to_string(Type);
-    [[nodiscard]] std::string to_string(unsigned long row, unsigned long col) const;
+    [[nodiscard]] std::string to_string() const;
 
     Name name;
     std::any attribute;
