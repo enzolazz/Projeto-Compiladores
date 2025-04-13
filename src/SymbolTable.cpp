@@ -55,7 +55,7 @@ Token& SymbolTable::insert(Row row) {
     }
 
     rows.push_back(row);
-    return row.token;
+    return rows.back().token;
 }
 
 SymbolTable::size_type SymbolTable::get_pos_lexeme(const std::string &lexeme) const { return lexeme_index.at(lexeme); }
