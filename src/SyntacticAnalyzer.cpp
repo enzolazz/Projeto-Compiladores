@@ -5,8 +5,7 @@
 #include <stack>
 #include <variant>
 
-template<typename Tp, typename Sequence = std::deque<Tp> >
-struct print_stack : std::stack<Tp, Sequence> {
+template <typename Tp, typename Sequence = std::deque<Tp>> struct print_stack : std::stack<Tp, Sequence> {
     void print() const {
         std::cout << "Stack: ";
         for (const auto &s : this->c) {
@@ -19,7 +18,6 @@ struct print_stack : std::stack<Tp, Sequence> {
         std::cout << std::endl;
     }
 };
-
 
 SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source) {
     for (auto &l : table)
@@ -119,7 +117,7 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
     print_stack<std::variant<Token::Name, int>> stack;
     stack.push(NT::PROGRAMA);
 
-    auto nextToken = lexer.next_token();
+    auto [nextToken, row, col] = lexer.next_token();
 
     while (!stack.empty()) {
         auto X = stack.top();
@@ -129,7 +127,7 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
             std::cout << '\n' << std::endl;
             if (*v == nextToken.name) {
                 stack.pop();
-                nextToken = lexer.next_token();
+                std::tie(nextToken, row, col) = lexer.next_token();
             } else {
                 std::cerr << Token::to_string(*v) << " != " << Token::to_string(nextToken.name) << std::endl;
                 throw 0;
