@@ -3,6 +3,8 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
 
+#include <ArvoreConcreta.hpp>
+
 #define tokred(token) token = static_cast<int>(Token::Name::token)
 
 class SyntacticAnalyzer {
@@ -11,6 +13,7 @@ class SyntacticAnalyzer {
     constexpr static auto TABLE_LINES = 22, TABLE_COLUMNS = 27;
     short table[TABLE_LINES][TABLE_COLUMNS];
     Lexer lexer;
+    ArvoreConcreta arvore;
 
  public:
     SyntacticAnalyzer(std::ifstream &source);
