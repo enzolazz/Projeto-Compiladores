@@ -1,4 +1,6 @@
 #include "Lexer.hpp"
+
+#include <SyntacticAnalyzer.hpp>
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -18,6 +20,7 @@ int main(int argc, char *argv[]) {
     }
 
     Lexer lex(source);
+    SyntacticAnalyzer syntactic_analyzer;
 
     for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
         switch (tok->name) {

@@ -4,8 +4,7 @@
 constexpr static signed char eof_c = -1;
 
 Lexer::Lexer(std::ifstream &source)
-    : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0),
-      eof(false) {
+    : source(source), active_buffer(0), row(1), col(1), col_lex_init(1), next_pos(0), eof(false) {
     source.read(buffers[active_buffer], BUFFER_SIZE);
     if (source.gcount() != BUFFER_SIZE)
         buffers[active_buffer][source.gcount()] = eof_c;

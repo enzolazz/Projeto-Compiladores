@@ -7,7 +7,7 @@
 
 class Lexer {
     static constexpr int BUFFER_SIZE = 128;
-    std::ifstream& source;
+    std::ifstream &source;
     char buffers[2][BUFFER_SIZE];
     unsigned short active_buffer;
     Token::size_type row, col, col_lex_init;

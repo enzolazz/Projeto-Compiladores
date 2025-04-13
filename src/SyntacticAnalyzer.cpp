@@ -1,0 +1,96 @@
+#include "SyntacticAnalyzer.hpp"
+#include <algorithm>
+
+SyntacticAnalyzer::SyntacticAnalyzer() {
+    for (auto &l : table)
+        std::fill_n(l, TABLE_COLUMNS, -1);
+
+    table[NT::PROGRAMA][T::PROGRAMA] = 1;
+    table[NT::BLOCO][T::BLOCO_START] = 2;
+    table[NT::DECLARACOES][T::IF] = 4;
+    table[NT::DECLARACOES][T::WHILE] = 4;
+    table[NT::DECLARACOES][T::DO] = 4;
+    table[NT::DECLARACOES][T::ID] = 4;
+    table[NT::DECLARACOES][T::TYPE] = 3;
+    table[NT::DECLARACAO][T::TYPE] = 5;
+    table[NT::IDS][T::ID] = 6;
+    table[NT::LISTA_IDS][T::END_SENTENCE] = 8;
+    table[NT::LISTA_IDS][T::COMMA] = 7;
+    table[NT::COMANDOS][T::IF] = 9;
+    table[NT::COMANDOS][T::WHILE] = 9;
+    table[NT::COMANDOS][T::DO] = 9;
+    table[NT::COMANDOS][T::ID] = 9;
+    table[NT::COMANDOS_OPT][T::IF] = 10;
+    table[NT::COMANDOS_OPT][T::WHILE] = 10;
+    table[NT::COMANDOS_OPT][T::DO] = 10;
+    table[NT::COMANDOS_OPT][T::BLOCO_END] = 11;
+    table[NT::COMANDOS_OPT][T::ID] = 10;
+    table[NT::COMANDO][T::IF] = 13;
+    table[NT::COMANDO][T::WHILE] = 14;
+    table[NT::COMANDO][T::DO] = 14;
+    table[NT::COMANDO][T::ID] = 12;
+    table[NT::CMD_ATRIBUICAO][T::ID] = 15;
+    table[NT::CMD_SELECAO][T::IF] = 16;
+    table[NT::CMD_ELSE_OPT][T::IF] = 19;
+    table[NT::CMD_ELSE_OPT][T::ELSE] = 18;   //
+    table[NT::CMD_ELSE_OPT][T::ELSEIF] = 17; //
+    table[NT::CMD_ELSE_OPT][T::WHILE] = 19;
+    table[NT::CMD_ELSE_OPT][T::DO] = 19;
+    table[NT::CMD_ELSE_OPT][T::BLOCO_END] = 19;
+    table[NT::CMD_ELSE_OPT][T::ID] = 19;
+    table[NT::CMD_REPETICAO][T::WHILE] = 20;
+    table[NT::CMD_REPETICAO][T::DO] = 21;
+    table[NT::CMD_OU_BLOCO][T::IF] = 22;
+    table[NT::CMD_OU_BLOCO][T::WHILE] = 22;
+    table[NT::CMD_OU_BLOCO][T::DO] = 22;
+    table[NT::CMD_OU_BLOCO][T::BLOCO_START] = 23;
+    table[NT::CMD_OU_BLOCO][T::ID] = 22;
+    table[NT::CONDICAO][T::PAR_START] = 24;
+    table[NT::CONDICAO][T::ID] = 24;
+    table[NT::CONDICAO][T::CONST] = 24;
+    table[NT::CONDICAO][T::SUM] = 24;
+    table[NT::CONDICAO][T::SUB] = 24;
+    table[NT::EXPRESSAO][T::PAR_START] = 25;
+    table[NT::EXPRESSAO][T::ID] = 25;
+    table[NT::EXPRESSAO][T::CONST] = 25;
+    table[NT::EXPRESSAO][T::SUM] = 25;
+    table[NT::EXPRESSAO][T::SUB] = 25;
+    table[NT::EXPRESSAO_PRIME][T::END_SENTENCE] = 28;
+    table[NT::EXPRESSAO_PRIME][T::PAR_END] = 28;
+    table[NT::EXPRESSAO_PRIME][T::BRACKET_END] = 28;
+    table[NT::EXPRESSAO_PRIME][T::RELOP] = 28;
+    table[NT::EXPRESSAO_PRIME][T::SUM] = 26;
+    table[NT::EXPRESSAO_PRIME][T::SUB] = 27;
+    table[NT::TERMO][T::PAR_START] = 29;
+    table[NT::TERMO][T::ID] = 29;
+    table[NT::TERMO][T::CONST] = 29;
+    table[NT::TERMO][T::SUM] = 29;
+    table[NT::TERMO][T::SUB] = 29;
+    table[NT::TERMO_PRIME][T::END_SENTENCE] = 32;
+    table[NT::TERMO_PRIME][T::PAR_END] = 32;
+    table[NT::TERMO_PRIME][T::BRACKET_END] = 32;
+    table[NT::TERMO_PRIME][T::RELOP] = 32;
+    table[NT::TERMO_PRIME][T::SUM] = 32;
+    table[NT::TERMO_PRIME][T::SUB] = 32;
+    table[NT::TERMO_PRIME][T::MUL] = 30;
+    table[NT::TERMO_PRIME][T::DIV] = 31;
+    table[NT::POTENCIA][T::PAR_START] = 33;
+    table[NT::POTENCIA][T::ID] = 33;
+    table[NT::POTENCIA][T::CONST] = 33;
+    table[NT::POTENCIA][T::SUM] = 33;
+    table[NT::POTENCIA][T::SUB] = 33;
+    table[NT::POTENCIA_PRIME][T::END_SENTENCE] = 35;
+    table[NT::POTENCIA_PRIME][T::PAR_END] = 35;
+    table[NT::POTENCIA_PRIME][T::BRACKET_END] = 35;
+    table[NT::POTENCIA_PRIME][T::RELOP] = 35;
+    table[NT::POTENCIA_PRIME][T::SUM] = 35;
+    table[NT::POTENCIA_PRIME][T::SUB] = 35;
+    table[NT::POTENCIA_PRIME][T::MUL] = 35;
+    table[NT::POTENCIA_PRIME][T::DIV] = 35;
+    table[NT::POTENCIA_PRIME][T::POW] = 34;
+    table[NT::FATOR][T::PAR_START] = 36;
+    table[NT::FATOR][T::ID] = 37;
+    table[NT::FATOR][T::CONST] = 38;
+    table[NT::FATOR][T::SUM] = 39;
+    table[NT::FATOR][T::SUB] = 40;
+}
