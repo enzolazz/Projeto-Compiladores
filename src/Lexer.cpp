@@ -69,14 +69,12 @@ static signed char to_char(const std::string &lexeme) {
     return lexeme[1];
 }
 
-std::optional<Token> Lexer::next_token() {
+Token Lexer::next_token() {
     int current_state = 0;
     token = {};
     lexeme = {};
 
     while (!token.has_value()) {
-        if (eof)
-            return {};
 
         switch (current_state) {
         case 0:
@@ -671,10 +669,10 @@ std::optional<Token> Lexer::next_token() {
         }
 
         if (c == eof_c)
-            eof = true;
+            return Token(Token::Name::END_OF_FILE, {}, row, col);
     }
 
-    return token;
+    return token.value();
 }
 
 int Lexer::s0_inicio_token(const signed char c) {

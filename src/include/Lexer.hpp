@@ -26,6 +26,6 @@ class Lexer {
 
  public:
     explicit Lexer(std::ifstream &source);
-    std::optional<Token> next_token();
+    Token next_token();
     SymbolTable symbolTable;
 };

@@ -1,5 +1,3 @@
-#include "Lexer.hpp"
-
 #include <SyntacticAnalyzer.hpp>
 #include <iostream>
 
@@ -19,22 +17,21 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    Lexer lex(source);
-    SyntacticAnalyzer syntactic_analyzer;
+    SyntacticAnalyzer syntactic_analyzer(source);
 
-    for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
-        switch (tok->name) {
-        case Token::Name::ID:
-        case Token::Name::CONST:
-            cout << "Linha da tabela: "
-                 << lex.symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string();
-            break;
-        default:
-            cout << "Token lido: " << tok.value().to_string();
-            break;
-        }
-        cout << endl;
-    }
+    // for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
+    //     switch (tok->name) {
+    //     case Token::Name::ID:
+    //     case Token::Name::CONST:
+    //         cout << "Linha da tabela: "
+    //              << lex.symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string();
+    //         break;
+    //     default:
+    //         cout << "Token lido: " << tok.value().to_string();
+    //         break;
+    //     }
+    //     cout << endl;
+    // }
 
     return EXIT_SUCCESS;
 }

@@ -1,41 +1,50 @@
 #pragma once
 
+#include "Lexer.hpp"
+#include "Token.hpp"
+
+#define tokred(token) token = static_cast<int>(Token::Name::token)
+
 class SyntacticAnalyzer {
+    void figurativamenteQualquerCoisa(auto a);
+
     constexpr static auto TABLE_LINES = 22, TABLE_COLUMNS = 27;
     short table[TABLE_LINES][TABLE_COLUMNS];
+    Lexer lexer;
 
  public:
-    SyntacticAnalyzer();
+    SyntacticAnalyzer(std::ifstream &source);
+    void literalmenteQualquerCoisa();
 
     struct T {
         enum {
-            PROGRAMA = 0,
-            IF,
-            THEN,
-            ELSE,
-            ELSEIF,
-            WHILE,
-            DO,
-            ATTRIBUTION,
-            BLOCO_START,
-            BLOCO_END,
-            END_SENTENCE,
-            COLON,
-            COMMA,
-            PAR_START,
-            PAR_END,
-            BRACKET_START,
-            BRACKET_END,
-            ID,
-            CONST,
-            RELOP,
-            TYPE,
-            SUM,
-            SUB,
-            MUL,
-            DIV,
-            POW,
-            END_OF_FILE
+            tokred(PROGRAMA),
+            tokred(IF),
+            tokred(THEN),
+            tokred(ELSE),
+            tokred(ELSEIF),
+            tokred(WHILE),
+            tokred(DO),
+            tokred(ATTRIBUTION),
+            tokred(BLOCO_START),
+            tokred(BLOCO_END),
+            tokred(END_SENTENCE),
+            tokred(COLON),
+            tokred(COMMA),
+            tokred(PAR_START),
+            tokred(PAR_END),
+            tokred(BRACKET_START),
+            tokred(BRACKET_END),
+            tokred(ID),
+            tokred(CONST),
+            tokred(RELOP),
+            tokred(TYPE),
+            tokred(SUM),
+            tokred(SUB),
+            tokred(MUL),
+            tokred(DIV),
+            tokred(POW),
+            tokred(END_OF_FILE)
         };
     };
 

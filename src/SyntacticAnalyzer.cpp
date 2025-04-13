@@ -1,7 +1,10 @@
 #include "SyntacticAnalyzer.hpp"
 #include <algorithm>
+#include <fstream>
+#include <stack>
+#include <variant>
 
-SyntacticAnalyzer::SyntacticAnalyzer() {
+SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source) {
     for (auto &l : table)
         std::fill_n(l, TABLE_COLUMNS, -1);
 
@@ -32,8 +35,8 @@ SyntacticAnalyzer::SyntacticAnalyzer() {
     table[NT::CMD_ATRIBUICAO][T::ID] = 15;
     table[NT::CMD_SELECAO][T::IF] = 16;
     table[NT::CMD_ELSE_OPT][T::IF] = 19;
-    table[NT::CMD_ELSE_OPT][T::ELSE] = 18;   //
-    table[NT::CMD_ELSE_OPT][T::ELSEIF] = 17; //
+    table[NT::CMD_ELSE_OPT][T::ELSE] = 18;
+    table[NT::CMD_ELSE_OPT][T::ELSEIF] = 17;
     table[NT::CMD_ELSE_OPT][T::WHILE] = 19;
     table[NT::CMD_ELSE_OPT][T::DO] = 19;
     table[NT::CMD_ELSE_OPT][T::BLOCO_END] = 19;
@@ -93,4 +96,200 @@ SyntacticAnalyzer::SyntacticAnalyzer() {
     table[NT::FATOR][T::CONST] = 38;
     table[NT::FATOR][T::SUM] = 39;
     table[NT::FATOR][T::SUB] = 40;
+}
+
+void SyntacticAnalyzer::literalmenteQualquerCoisa() {
+    std::stack<std::variant<Token::Name, int>> stack;
+    stack.push(NT::PROGRAMA);
+
+    auto nextToken = lexer.next_token();
+
+    while (!stack.empty()) {
+        auto X = stack.top();
+
+        if (auto v = std::get_if<Token::Name>(&X)) {
+            if (*v == nextToken.name) {
+                stack.pop();
+                nextToken = lexer.next_token();
+            } else
+                throw 0;
+        } else {
+            int nt = *std::get_if<int>(&X);
+            int prod = table[nt][static_cast<int>(nextToken.name)];
+            if (prod == -1)
+                throw -1;
+
+            // figurativamenteQualquerCoisa(a);
+            stack.pop();
+            switch (prod) {
+            case 1:
+                stack.push(NT::BLOCO);
+                stack.push(Token::Name::PAR_END);
+                stack.push(Token::Name::PAR_START);
+                stack.push(Token::Name::ID);
+                stack.push(Token::Name::PROGRAMA);
+                break;
+            case 2:
+                stack.push(Token::Name::BRACKET_END);
+                stack.push(NT::COMANDOS);
+                stack.push(NT::DECLARACOES);
+                stack.push(Token::Name::BRACKET_START);
+                break;
+            case 3:
+                stack.push(NT::DECLARACAO);
+                stack.push(NT::DECLARACOES);
+                break;
+            case 5:
+                stack.push(Token::Name::END_SENTENCE);
+                stack.push(NT::IDS);
+                stack.push(Token::Name::COLON);
+                stack.push(Token::Name::TYPE);
+                break;
+            case 6:
+                stack.push(NT::LISTA_IDS);
+                stack.push(Token::Name::ID);
+                break;
+            case 7:
+                stack.push(NT::LISTA_IDS);
+                stack.push(Token::Name::ID);
+                stack.push(Token::Name::COLON);
+                break;
+            case 9:
+                stack.push(NT::COMANDOS_OPT);
+                stack.push(NT::COMANDO);
+                break;
+            case 10:
+                stack.push(NT::COMANDOS);
+                break;
+            case 12:
+                stack.push(NT::CMD_ATRIBUICAO);
+                break;
+            case 13:
+                stack.push(NT::CMD_SELECAO);
+                break;
+            case 14:
+                stack.push(NT::CMD_REPETICAO);
+                break;
+            case 15:
+                stack.push(Token::Name::END_SENTENCE);
+                stack.push(NT::EXPRESSAO);
+                stack.push(Token::Name::ATTRIBUTION);
+                stack.push(Token::Name::ID);
+                break;
+            case 16:
+                stack.push(NT::CMD_ELSE_OPT);
+                stack.push(NT::CMD_OU_BLOCO);
+                stack.push(Token::Name::THEN);
+                stack.push(Token::Name::BRACKET_END);
+                stack.push(NT::CONDICAO);
+                stack.push(Token::Name::BRACKET_START);
+                stack.push(Token::Name::IF);
+                break;
+            case 17:
+                stack.push(NT::CMD_ELSE_OPT);
+                stack.push(NT::CMD_OU_BLOCO);
+                stack.push(Token::Name::THEN);
+                stack.push(Token::Name::BRACKET_END);
+                stack.push(NT::CONDICAO);
+                stack.push(Token::Name::BRACKET_START);
+                stack.push(Token::Name::ELSEIF);
+                break;
+            case 18:
+                stack.push(NT::CMD_OU_BLOCO);
+                stack.push(Token::Name::ELSE);
+                break;
+            case 20:
+                stack.push(NT::CMD_OU_BLOCO);
+                stack.push(Token::Name::DO);
+                stack.push(Token::Name::BRACKET_END);
+                stack.push(NT::CONDICAO);
+                stack.push(Token::Name::BRACKET_START);
+                stack.push(Token::Name::WHILE);
+                break;
+            case 21:
+                stack.push(Token::Name::END_SENTENCE);
+                stack.push(Token::Name::BRACKET_END);
+                stack.push(NT::CONDICAO);
+                stack.push(Token::Name::BRACKET_START);
+                stack.push(Token::Name::WHILE);
+                stack.push(NT::CMD_OU_BLOCO);
+                stack.push(Token::Name::DO);
+                break;
+            case 22:
+                stack.push(NT::COMANDO);
+                break;
+            case 23:
+                stack.push(NT::BLOCO);
+                break;
+            case 24:
+                stack.push(NT::EXPRESSAO);
+                stack.push(Token::Name::RELOP);
+                stack.push(NT::EXPRESSAO);
+                break;
+            case 25:
+                stack.push(NT::EXPRESSAO_PRIME);
+                stack.push(NT::TERMO);
+                break;
+            case 26:
+                stack.push(NT::EXPRESSAO_PRIME);
+                stack.push(NT::TERMO);
+                stack.push(Token::Name::SUM);
+                break;
+            case 27:
+                stack.push(NT::EXPRESSAO_PRIME);
+                stack.push(NT::TERMO);
+                stack.push(Token::Name::SUB);
+                break;
+            case 29:
+                stack.push(NT::TERMO_PRIME);
+                stack.push(NT::POTENCIA);
+                break;
+            case 30:
+                stack.push(NT::TERMO_PRIME);
+                stack.push(NT::POTENCIA);
+                stack.push(Token::Name::MUL);
+                break;
+            case 31:
+                stack.push(NT::TERMO_PRIME);
+                stack.push(NT::POTENCIA);
+                stack.push(Token::Name::DIV);
+                break;
+            case 33:
+                stack.push(NT::POTENCIA_PRIME);
+                stack.push(NT::FATOR);
+                break;
+            case 34:
+                stack.push(NT::POTENCIA_PRIME);
+                stack.push(NT::FATOR);
+                stack.push(Token::Name::POW);
+                break;
+            case 36:
+                stack.push(Token::Name::PAR_END);
+                stack.push(NT::EXPRESSAO);
+                stack.push(Token::Name::PAR_START);
+                break;
+            case 37:
+                stack.push(Token::Name::ID);
+                break;
+            case 38:
+                stack.push(Token::Name::CONST);
+                break;
+            case 39:
+                stack.push(NT::FATOR);
+                stack.push(Token::Name::SUM);
+                break;
+            case 40:
+                stack.push(NT::FATOR);
+                stack.push(Token::Name::SUB);
+                break;
+            default:
+                if (prod > 40)
+                    throw -2;
+                break;
+            }
+            stack.pop();
+        }
+    }
+    if (nextToken.name != Token::Name::END_OF_FILE)
+        throw -3;
 }

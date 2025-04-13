@@ -1,19 +1,17 @@
 programa TesteIDs()
 {%
-    int: a, a2, _a3, a_4, 5a _6a;
+    int: a, a2, _a3, a_4, 5a, _6a;
     a := 1;
     a2 := 2;
-    _a3 := 3;
-    a_4 := 1;
-    5a := 5;
     if [ a < a2 ]           then
       a := a + 10;
-    if [ a < a3 ] then
+    if [ a < 0 ] then
         a := a + 5.2;
     elseif [ a = a2 ] then
         a := a + 3;
     else{%
-        a := 'a';
+        a := 
+'a';
         a2 := 2;
     %}
     else
@@ -22,11 +20,11 @@ programa TesteIDs()
 {# coment´sdaedfgj 245 ''dfeg ew emvn  q      ´q eff qf edfv #}
 {%
 do{%
-    a_4 := a_4 + 1;
-    a_4 := a_4 * 0.9;
-%} while [ _a3 < 3 ];
+    a := a + 1;
+    a := a * 0.9;
+%} while [ a < 3 ];
 
-while [ _a3 < 3 ] do
-    a_3 := a_4 + 1;
+while [ a2 < 3 ] do
+    a2 := a2 + 1;
 %}
 %}
