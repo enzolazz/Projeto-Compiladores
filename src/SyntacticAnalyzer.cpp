@@ -131,7 +131,6 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
                 std::tie(nextToken, row, col) = lexer.next_token();
             } else {
                 throw SyntacticException("Token esperado: " + Token::to_string(*v), nextToken, row, col);
-                throw 0;
             }
         } else {
             int nt = *std::get_if<int>(&X);
@@ -306,11 +305,11 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
                 break;
             default:
                 if (prod > 40)
-                    throw -2;
+                    throw std::logic_error("Producao inexistente.");
                 break;
             }
         }
     }
     if (nextToken.name != Token::Name::END_OF_FILE)
-        throw -3;
+        throw SyntacticException("O fim do arquivo era esperado.", nextToken, row, col);
 }
