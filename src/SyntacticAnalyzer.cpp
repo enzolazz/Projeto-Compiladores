@@ -138,7 +138,7 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
             stack.print();
             std::cout << "Producao: " << prod << '\n' << std::endl;
             if (prod == -1)
-                throw -1;
+                throw SyntacticException("Producao inexistente.", nextToken, row, col);
 
             // figurativamenteQualquerCoisa(a);
             stack.pop();
