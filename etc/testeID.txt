@@ -1,41 +1,31 @@
-programa TesteComplexo500Linhas()
+programa TesteIDs
 {%
-  int: a, b, c, i, j, k, count, temp, result, sum;
-  float: x, y, z, average;
-  char: ch, delim;
+    int a, a2, _a3, a_4, 5a _6a;
+    a := 1;
+    a2 := 2;
+    _a3 := 3;
+    a_4 := 1;
+    5a := 5;
+    if [ a < a2 ]           then
+      a := a + 10;
+    if [ a < a3 ] then
+        a := a + 5.2;
+    elseif [ a = a2 ] then
+        a := a + 3;
+    else{%
+        a := 'a';
+        a2 := 2;
+    %}
+    else
+        a := a + 1;
+{# coment´sdaedfgj 245 ''dfeg ew emvn  q      ´q eff qf edfv #}
+{%
+do{%
+    a_4 := a_4 + 1;
+    a_4 := a_4 * 0.9;
+%} while [ _a3 < 3 ];
 
-  a := 10;
-  b := 20;
-  c := 30;
-  i := 0;
-  j := 0;
-  k := 0;
-  count := 0;
-  temp := 0;
-  result := 0;
-  sum := 0;
-
-  x := 1.1;
-  y := 2.2;
-  z := 3.3;
-  average := 0.0;
-
-  ch := 'A';
-  delim := ' ';
-
-  {# Início do laço externo para iteração geral #}
-  while [ i < 5 ] do
-    {%
-      a := a + i;
-      b := b + 2 * i;
-      c := c - i;
-      {# Bloco de condição aninhado 1 #}
-      if [ a > b ] then
-         a := a - 1;
-      elseif [ a = b ] then
-         a := a + 1;
-      else
-         b := b + 1;
-         int: ino;
-         ino := 0;
+while [ _a3 < 3 ] do
+    a_3 := a_4 + 1;
+%}
 %}

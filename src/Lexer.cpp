@@ -167,9 +167,10 @@ std::optional<Token> Lexer::next_token() {
             next_char();
             if (c == eof_c)
                 throw LexerException("Fim inesperado do arquivo", row, col, c);
-            else if (c == '\\')
+
+            if (c == '\\')
                 current_state = 16;
-            else if (c != '\\' && c != '\'' && c != '\n')
+            else if (c != '\'' && c != '\n')
                 current_state = 17;
             else
                 throw LexerException("Caractere inesperado", row, col, c);
