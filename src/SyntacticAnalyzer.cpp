@@ -1,8 +1,25 @@
 #include "SyntacticAnalyzer.hpp"
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <stack>
 #include <variant>
+
+template<typename Tp, typename Sequence = std::deque<Tp> >
+struct print_stack : std::stack<Tp, Sequence> {
+    void print() const {
+        std::cout << "Stack: ";
+        for (const auto &s : this->c) {
+            if (const auto v = std::get_if<Token::Name>(&s)) {
+                std::cout << Token::to_string(*v) << "; ";
+            } else {
+                std::cout << *std::get_if<int>(&s) + 2 << "; ";
+            }
+        }
+        std::cout << std::endl;
+    }
+};
+
 
 SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source) {
     for (auto &l : table)
@@ -99,7 +116,7 @@ SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source) {
 }
 
 void SyntacticAnalyzer::literalmenteQualquerCoisa() {
-    std::stack<std::variant<Token::Name, int>> stack;
+    print_stack<std::variant<Token::Name, int>> stack;
     stack.push(NT::PROGRAMA);
 
     auto nextToken = lexer.next_token();
@@ -108,14 +125,20 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
         auto X = stack.top();
 
         if (auto v = std::get_if<Token::Name>(&X)) {
+            stack.print();
+            std::cout << '\n' << std::endl;
             if (*v == nextToken.name) {
                 stack.pop();
                 nextToken = lexer.next_token();
-            } else
+            } else {
+                std::cerr << Token::to_string(*v) << " != " << Token::to_string(nextToken.name) << std::endl;
                 throw 0;
+            }
         } else {
             int nt = *std::get_if<int>(&X);
             int prod = table[nt][static_cast<int>(nextToken.name)];
+            stack.print();
+            std::cout << "Producao: " << prod << '\n' << std::endl;
             if (prod == -1)
                 throw -1;
 
@@ -123,171 +146,170 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
             stack.pop();
             switch (prod) {
             case 1:
-                stack.push(NT::BLOCO);
-                stack.push(Token::Name::PAR_END);
-                stack.push(Token::Name::PAR_START);
-                stack.push(Token::Name::ID);
-                stack.push(Token::Name::PROGRAMA);
+                stack.emplace(NT::BLOCO);
+                stack.emplace(Token::Name::PAR_END);
+                stack.emplace(Token::Name::PAR_START);
+                stack.emplace(Token::Name::ID);
+                stack.emplace(Token::Name::PROGRAMA);
                 break;
             case 2:
-                stack.push(Token::Name::BRACKET_END);
-                stack.push(NT::COMANDOS);
-                stack.push(NT::DECLARACOES);
-                stack.push(Token::Name::BRACKET_START);
+                stack.emplace(Token::Name::BLOCO_END);
+                stack.emplace(NT::COMANDOS);
+                stack.emplace(NT::DECLARACOES);
+                stack.emplace(Token::Name::BLOCO_START);
                 break;
             case 3:
-                stack.push(NT::DECLARACAO);
-                stack.push(NT::DECLARACOES);
+                stack.emplace(NT::DECLARACOES);
+                stack.emplace(NT::DECLARACAO);
                 break;
             case 5:
-                stack.push(Token::Name::END_SENTENCE);
-                stack.push(NT::IDS);
-                stack.push(Token::Name::COLON);
-                stack.push(Token::Name::TYPE);
+                stack.emplace(Token::Name::END_SENTENCE);
+                stack.emplace(NT::IDS);
+                stack.emplace(Token::Name::COLON);
+                stack.emplace(Token::Name::TYPE);
                 break;
             case 6:
-                stack.push(NT::LISTA_IDS);
-                stack.push(Token::Name::ID);
+                stack.emplace(NT::LISTA_IDS);
+                stack.emplace(Token::Name::ID);
                 break;
             case 7:
-                stack.push(NT::LISTA_IDS);
-                stack.push(Token::Name::ID);
-                stack.push(Token::Name::COLON);
+                stack.emplace(NT::LISTA_IDS);
+                stack.emplace(Token::Name::ID);
+                stack.emplace(Token::Name::COMMA);
                 break;
             case 9:
-                stack.push(NT::COMANDOS_OPT);
-                stack.push(NT::COMANDO);
+                stack.emplace(NT::COMANDOS_OPT);
+                stack.emplace(NT::COMANDO);
                 break;
             case 10:
-                stack.push(NT::COMANDOS);
+                stack.emplace(NT::COMANDOS);
                 break;
             case 12:
-                stack.push(NT::CMD_ATRIBUICAO);
+                stack.emplace(NT::CMD_ATRIBUICAO);
                 break;
             case 13:
-                stack.push(NT::CMD_SELECAO);
+                stack.emplace(NT::CMD_SELECAO);
                 break;
             case 14:
-                stack.push(NT::CMD_REPETICAO);
+                stack.emplace(NT::CMD_REPETICAO);
                 break;
             case 15:
-                stack.push(Token::Name::END_SENTENCE);
-                stack.push(NT::EXPRESSAO);
-                stack.push(Token::Name::ATTRIBUTION);
-                stack.push(Token::Name::ID);
+                stack.emplace(Token::Name::END_SENTENCE);
+                stack.emplace(NT::EXPRESSAO);
+                stack.emplace(Token::Name::ATTRIBUTION);
+                stack.emplace(Token::Name::ID);
                 break;
             case 16:
-                stack.push(NT::CMD_ELSE_OPT);
-                stack.push(NT::CMD_OU_BLOCO);
-                stack.push(Token::Name::THEN);
-                stack.push(Token::Name::BRACKET_END);
-                stack.push(NT::CONDICAO);
-                stack.push(Token::Name::BRACKET_START);
-                stack.push(Token::Name::IF);
+                stack.emplace(NT::CMD_ELSE_OPT);
+                stack.emplace(NT::CMD_OU_BLOCO);
+                stack.emplace(Token::Name::THEN);
+                stack.emplace(Token::Name::BRACKET_END);
+                stack.emplace(NT::CONDICAO);
+                stack.emplace(Token::Name::BRACKET_START);
+                stack.emplace(Token::Name::IF);
                 break;
             case 17:
-                stack.push(NT::CMD_ELSE_OPT);
-                stack.push(NT::CMD_OU_BLOCO);
-                stack.push(Token::Name::THEN);
-                stack.push(Token::Name::BRACKET_END);
-                stack.push(NT::CONDICAO);
-                stack.push(Token::Name::BRACKET_START);
-                stack.push(Token::Name::ELSEIF);
+                stack.emplace(NT::CMD_ELSE_OPT);
+                stack.emplace(NT::CMD_OU_BLOCO);
+                stack.emplace(Token::Name::THEN);
+                stack.emplace(Token::Name::BRACKET_END);
+                stack.emplace(NT::CONDICAO);
+                stack.emplace(Token::Name::BRACKET_START);
+                stack.emplace(Token::Name::ELSEIF);
                 break;
             case 18:
-                stack.push(NT::CMD_OU_BLOCO);
-                stack.push(Token::Name::ELSE);
+                stack.emplace(NT::CMD_OU_BLOCO);
+                stack.emplace(Token::Name::ELSE);
                 break;
             case 20:
-                stack.push(NT::CMD_OU_BLOCO);
-                stack.push(Token::Name::DO);
-                stack.push(Token::Name::BRACKET_END);
-                stack.push(NT::CONDICAO);
-                stack.push(Token::Name::BRACKET_START);
-                stack.push(Token::Name::WHILE);
+                stack.emplace(NT::CMD_OU_BLOCO);
+                stack.emplace(Token::Name::DO);
+                stack.emplace(Token::Name::BRACKET_END);
+                stack.emplace(NT::CONDICAO);
+                stack.emplace(Token::Name::BRACKET_START);
+                stack.emplace(Token::Name::WHILE);
                 break;
             case 21:
-                stack.push(Token::Name::END_SENTENCE);
-                stack.push(Token::Name::BRACKET_END);
-                stack.push(NT::CONDICAO);
-                stack.push(Token::Name::BRACKET_START);
-                stack.push(Token::Name::WHILE);
-                stack.push(NT::CMD_OU_BLOCO);
-                stack.push(Token::Name::DO);
+                stack.emplace(Token::Name::END_SENTENCE);
+                stack.emplace(Token::Name::BRACKET_END);
+                stack.emplace(NT::CONDICAO);
+                stack.emplace(Token::Name::BRACKET_START);
+                stack.emplace(Token::Name::WHILE);
+                stack.emplace(NT::CMD_OU_BLOCO);
+                stack.emplace(Token::Name::DO);
                 break;
             case 22:
-                stack.push(NT::COMANDO);
+                stack.emplace(NT::COMANDO);
                 break;
             case 23:
-                stack.push(NT::BLOCO);
+                stack.emplace(NT::BLOCO);
                 break;
             case 24:
-                stack.push(NT::EXPRESSAO);
-                stack.push(Token::Name::RELOP);
-                stack.push(NT::EXPRESSAO);
+                stack.emplace(NT::EXPRESSAO);
+                stack.emplace(Token::Name::RELOP);
+                stack.emplace(NT::EXPRESSAO);
                 break;
             case 25:
-                stack.push(NT::EXPRESSAO_PRIME);
-                stack.push(NT::TERMO);
+                stack.emplace(NT::EXPRESSAO_PRIME);
+                stack.emplace(NT::TERMO);
                 break;
             case 26:
-                stack.push(NT::EXPRESSAO_PRIME);
-                stack.push(NT::TERMO);
-                stack.push(Token::Name::SUM);
+                stack.emplace(NT::EXPRESSAO_PRIME);
+                stack.emplace(NT::TERMO);
+                stack.emplace(Token::Name::SUM);
                 break;
             case 27:
-                stack.push(NT::EXPRESSAO_PRIME);
-                stack.push(NT::TERMO);
-                stack.push(Token::Name::SUB);
+                stack.emplace(NT::EXPRESSAO_PRIME);
+                stack.emplace(NT::TERMO);
+                stack.emplace(Token::Name::SUB);
                 break;
             case 29:
-                stack.push(NT::TERMO_PRIME);
-                stack.push(NT::POTENCIA);
+                stack.emplace(NT::TERMO_PRIME);
+                stack.emplace(NT::POTENCIA);
                 break;
             case 30:
-                stack.push(NT::TERMO_PRIME);
-                stack.push(NT::POTENCIA);
-                stack.push(Token::Name::MUL);
+                stack.emplace(NT::TERMO_PRIME);
+                stack.emplace(NT::POTENCIA);
+                stack.emplace(Token::Name::MUL);
                 break;
             case 31:
-                stack.push(NT::TERMO_PRIME);
-                stack.push(NT::POTENCIA);
-                stack.push(Token::Name::DIV);
+                stack.emplace(NT::TERMO_PRIME);
+                stack.emplace(NT::POTENCIA);
+                stack.emplace(Token::Name::DIV);
                 break;
             case 33:
-                stack.push(NT::POTENCIA_PRIME);
-                stack.push(NT::FATOR);
+                stack.emplace(NT::POTENCIA_PRIME);
+                stack.emplace(NT::FATOR);
                 break;
             case 34:
-                stack.push(NT::POTENCIA_PRIME);
-                stack.push(NT::FATOR);
-                stack.push(Token::Name::POW);
+                stack.emplace(NT::POTENCIA_PRIME);
+                stack.emplace(NT::FATOR);
+                stack.emplace(Token::Name::POW);
                 break;
             case 36:
-                stack.push(Token::Name::PAR_END);
-                stack.push(NT::EXPRESSAO);
-                stack.push(Token::Name::PAR_START);
+                stack.emplace(Token::Name::PAR_END);
+                stack.emplace(NT::EXPRESSAO);
+                stack.emplace(Token::Name::PAR_START);
                 break;
             case 37:
-                stack.push(Token::Name::ID);
+                stack.emplace(Token::Name::ID);
                 break;
             case 38:
-                stack.push(Token::Name::CONST);
+                stack.emplace(Token::Name::CONST);
                 break;
             case 39:
-                stack.push(NT::FATOR);
-                stack.push(Token::Name::SUM);
+                stack.emplace(NT::FATOR);
+                stack.emplace(Token::Name::SUM);
                 break;
             case 40:
-                stack.push(NT::FATOR);
-                stack.push(Token::Name::SUB);
+                stack.emplace(NT::FATOR);
+                stack.emplace(Token::Name::SUB);
                 break;
             default:
                 if (prod > 40)
                     throw -2;
                 break;
             }
-            stack.pop();
         }
     }
     if (nextToken.name != Token::Name::END_OF_FILE)

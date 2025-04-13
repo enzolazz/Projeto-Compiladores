@@ -75,7 +75,6 @@ Token Lexer::next_token() {
     lexeme = {};
 
     while (!token.has_value()) {
-
         switch (current_state) {
         case 0:
             col_lex_init = col;

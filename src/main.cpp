@@ -18,16 +18,17 @@ int main(int argc, char *argv[]) {
     }
 
     SyntacticAnalyzer syntactic_analyzer(source);
+    syntactic_analyzer.literalmenteQualquerCoisa();
 
-    // for (auto tok = lex.next_token(); tok.has_value(); tok = lex.next_token()) {
-    //     switch (tok->name) {
+    // for (auto tok = lex.next_token(); tok.name != Token::Name::END_OF_FILE; tok = lex.next_token()) {
+    //     switch (tok.name) {
     //     case Token::Name::ID:
     //     case Token::Name::CONST:
     //         cout << "Linha da tabela: "
-    //              << lex.symbolTable[std::any_cast<SymbolTable::size_type>(tok->attribute)].to_string();
+    //              << lex.symbolTable[std::any_cast<SymbolTable::size_type>(tok.attribute)].to_string();
     //         break;
     //     default:
-    //         cout << "Token lido: " << tok.value().to_string();
+    //         cout << "Token lido: " << tok.to_string();
     //         break;
     //     }
     //     cout << endl;
