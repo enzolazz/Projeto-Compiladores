@@ -4,8 +4,6 @@
 #include <string>
 
 struct Token {
-    using size_type = unsigned long;
-
     enum class Name : short {
         END_OF_FILE,
         PROGRAMA,
@@ -41,9 +39,8 @@ struct Token {
     static std::string to_string(Name);
     static std::string to_string(RelOp);
     static std::string to_string(Type);
-    [[nodiscard]] std::string to_string() const;
+    [[nodiscard]] std::string to_string(unsigned long row, unsigned long col) const;
 
     Name name;
     std::any attribute;
-    size_type row, col;
 };

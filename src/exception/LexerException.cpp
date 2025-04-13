@@ -13,7 +13,7 @@ static std::string translate_char(const signed char c) {
     }
 }
 
-LexerException::LexerException(const std::string& what, const Token::size_type row, const Token::size_type col,
+LexerException::LexerException(const std::string &what, const unsigned long row, const unsigned long col,
                                const signed char c)
     : std::runtime_error(what), row(row), col(col), c(c),
 

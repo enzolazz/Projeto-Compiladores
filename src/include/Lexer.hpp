@@ -10,7 +10,7 @@ class Lexer {
     std::ifstream &source;
     char buffers[2][BUFFER_SIZE];
     unsigned short active_buffer;
-    Token::size_type row, col, col_lex_init;
+    unsigned long row, col, col_lex_init;
     int next_pos;
     bool eof;
 
@@ -26,6 +26,6 @@ class Lexer {
 
  public:
     explicit Lexer(std::ifstream &source);
-    Token next_token();
+    std::tuple<Token, unsigned long, unsigned long> next_token();
     SymbolTable symbolTable;
 };

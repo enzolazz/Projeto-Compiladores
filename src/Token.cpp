@@ -1,5 +1,6 @@
-#include "SymbolTable.hpp"
 #include "Token.hpp"
+#include "Lexer.hpp"
+#include "SymbolTable.hpp"
 #include <stdexcept>
 
 std::string Token::to_string(const Name type) {
@@ -93,7 +94,7 @@ std::string Token::to_string(const Type type) {
     }
 }
 
-std::string Token::to_string() const {
+std::string Token::to_string(unsigned long row, unsigned long col) const {
     auto str = '<' + to_string(name);
     if (name >= Name::PROGRAMA && name <= Name::BRACKET_END)
         ;
