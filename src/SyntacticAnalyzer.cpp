@@ -130,7 +130,6 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
             std::cout << '\n' << std::endl;
             if (*v == nextToken.name) {
                 stack.pop();
-                arvore.next_node();
                 std::tie(nextToken, row, col) = lexer.next_token();
             } else {
                 std::cerr << Token::to_string(*v) << " != " << Token::to_string(nextToken.name) << std::endl;

@@ -10,16 +10,24 @@ ArvoreConcreta::ArvoreConcreta(const elem_type root_value) : root_node(nullptr, 
 }
 
 ArvoreConcreta::No *ArvoreConcreta::next_node() {
-    if (std::holds_alternative<Token::Name>(current_node->value) && !current_node->children.empty())
-        throw "fdsklfjd";
-
     if (current_node == nullptr)
         return nullptr;
 
-    // NÃO TERMINAL
-    if (std::holds_alternative<int>(current_node->value)) {
-        current_node = current_node->children[current_node->next_to_visit];
-    }
+    if (current_node == &root_node && root_node.children.empty())
+        return current_node;
+
+    No* candidato;
+    do {
+        if (current_node->next_to_visit < current_node->children.size())
+            candidato = &current_node->children[current_node->next_to_visit++];
+        else {
+            current_node = current_node->parent;
+            return next_node();
+        }
+    } while (std::holds_alternative<Token::Name>(candidato->value) || std::holds_alternative<epsilon_type>(candidato->value));
+
+    current_node = candidato;
+    return current_node;
 }
 
 ArvoreConcreta::No ArvoreConcreta::peek_next() {}
