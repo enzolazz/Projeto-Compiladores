@@ -46,30 +46,6 @@ void Lexer::look_ahead() {
 
 static bool isValidIdChar(const signed char c) { return std::isalnum(c) || c == '_'; }
 
-static signed char to_char(const std::string &lexeme) {
-    if (lexeme[1] == '\\') {
-        switch (lexeme[2]) {
-        case 'a':
-            return '\a';
-        case 'b':
-            return '\b';
-        case 't':
-            return '\t';
-        case 'n':
-            return '\n';
-        case 'v':
-            return '\v';
-        case 'f':
-            return '\f';
-        case 'r':
-            return '\r';
-        default:
-            return lexeme[2];
-        }
-    }
-    return lexeme[1];
-}
-
 std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
     int current_state = 0;
     token = {};

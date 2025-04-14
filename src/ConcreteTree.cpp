@@ -1,39 +1,36 @@
-#include "ArvoreConcreta.hpp"
-
+#include "ConcreteTree.hpp"
 #include <functional>
 #include <ranges>
 
-ArvoreConcreta::No::No(No *parent, elem_type value) : parent(parent), next_to_visit(0), value(value) {}
+ConcreteTree::No::No(No *parent, const elem_type value) : parent(parent), next_to_visit(0), value(value) {}
 
-ArvoreConcreta::ArvoreConcreta(const elem_type root_value) : root_node(nullptr, root_value) {
+ConcreteTree::ConcreteTree(const elem_type root_value) : root_node(nullptr, root_value) {
     current_node = &root_node;
 }
 
-ArvoreConcreta::No *ArvoreConcreta::next_node() {
+ConcreteTree::No *ConcreteTree::next_node() {
     if (current_node == nullptr)
         return nullptr;
 
     if (current_node == &root_node && root_node.children.empty())
         return current_node;
 
-    No* candidato;
+    No* candidate;
     do {
         if (current_node->next_to_visit < current_node->children.size())
-            candidato = &current_node->children[current_node->next_to_visit++];
+            candidate = &current_node->children[current_node->next_to_visit++];
         else {
             current_node = current_node->parent;
             return next_node();
         }
-    } while (std::holds_alternative<Token::Name>(candidato->value) || std::holds_alternative<epsilon_type>(candidato->value));
+    } while (std::holds_alternative<Token::Name>(candidate->value) || std::holds_alternative<epsilon_type>(candidate->value));
 
-    current_node = candidato;
+    current_node = candidate;
     return current_node;
 }
 
-ArvoreConcreta::No ArvoreConcreta::peek_next() {}
-
-std::string ArvoreConcreta::to_string() const {
-    std::function<std::string(const No *, int)> node_to_string = [&](const No *node, int depth) -> std::string {
+std::string ConcreteTree::to_string() const {
+    std::function<std::string(const No *, int)> node_to_string = [&](const No *node, const int depth) -> std::string {
         if (node == nullptr)
             return "";
 

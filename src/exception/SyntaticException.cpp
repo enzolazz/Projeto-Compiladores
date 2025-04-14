@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <string>
 
-SyntacticException::SyntacticException(const std::string &what, const Token token, const unsigned long row,
+SyntacticException::SyntacticException(const std::string &what, const Token& token, const unsigned long row,
                                        const unsigned long col)
     : std::runtime_error(what), token(token), row(row), col(col),
 

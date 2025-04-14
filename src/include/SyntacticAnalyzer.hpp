@@ -2,8 +2,7 @@
 
 #include "Lexer.hpp"
 #include "Token.hpp"
-
-#include <ArvoreConcreta.hpp>
+#include "ConcreteTree.hpp"
 
 #define tokred(token) token = static_cast<int>(Token::Name::token)
 
@@ -13,11 +12,11 @@ class SyntacticAnalyzer {
     constexpr static auto TABLE_LINES = 22, TABLE_COLUMNS = 27;
     short table[TABLE_LINES][TABLE_COLUMNS];
     Lexer lexer;
-    ArvoreConcreta arvore;
+    ConcreteTree tree;
 
  public:
     SyntacticAnalyzer(std::ifstream &source);
-    void literalmenteQualquerCoisa();
+    [[nodiscard]] ConcreteTree get_concrete_derivation_tree();
 
     struct T {
         enum {

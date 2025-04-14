@@ -36,9 +36,9 @@ struct Token {
     enum class RelOp : short { LT, LE, EQ, NE, GE, GT };
     enum class Type : short { INT, FLOAT, CHAR };
 
-    static std::string to_string(Name);
-    static std::string to_string(RelOp);
-    static std::string to_string(Type);
+    [[nodiscard]] static std::string to_string(Name);
+    [[nodiscard]] static std::string to_string(RelOp);
+    [[nodiscard]] static std::string to_string(Type);
     [[nodiscard]] std::string to_string() const;
 
     Name name;

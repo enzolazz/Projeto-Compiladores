@@ -4,13 +4,13 @@
 #include <variant>
 #include <vector>
 
-class ArvoreConcreta {
+class ConcreteTree {
  public:
     using epsilon_type = std::monostate;
     using elem_type = std::variant<epsilon_type, int, Token::Name>;
 
     class No {
-        friend ArvoreConcreta;
+        friend ConcreteTree;
         No *parent;
         std::vector<No> children;
         decltype(children)::size_type next_to_visit;
@@ -30,9 +30,8 @@ class ArvoreConcreta {
     No root_node;
 
  public:
-    explicit ArvoreConcreta(elem_type root_value);
+    explicit ConcreteTree(elem_type root_value);
 
     No *next_node();
-   No peek_next();
     [[nodiscard]] std::string to_string() const;
 };

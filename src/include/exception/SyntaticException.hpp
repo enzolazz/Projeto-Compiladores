@@ -11,7 +11,7 @@ class SyntacticException : public std::runtime_error {
     const unsigned long row, col;
     const std::string what_s;
 
-    SyntacticException(const std::string &what, Token token, unsigned long row, unsigned long col);
+    SyntacticException(const std::string &what, const Token &token, unsigned long row, unsigned long col);
 
-    const char *what() const noexcept override;
+    [[nodiscard]] const char *what() const noexcept override;
 };

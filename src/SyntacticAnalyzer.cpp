@@ -2,10 +2,10 @@
 #include "exception/SyntaticException.hpp"
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 #include <ranges>
 #include <stack>
 #include <variant>
+#include <iostream>
 
 template <typename Tp, typename Sequence = std::deque<Tp>> struct print_stack : std::stack<Tp, Sequence> {
     void print() const {
@@ -15,14 +15,14 @@ template <typename Tp, typename Sequence = std::deque<Tp>> struct print_stack : 
                 std::cout << Token::to_string(*name) << "; ";
             else if (const auto nt = std::get_if<int>(&s))
                 std::cout << *nt + 2 << "; ";
-            else if (const auto e = std::get_if<ArvoreConcreta::epsilon_type>(&s))
+            else if (const auto e = std::get_if<ConcreteTree::epsilon_type>(&s))
                 std::cout << "epsilon; ";
         }
         std::cout << std::endl;
     }
 };
 
-SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source), arvore(NT::PROGRAMA) {
+SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source), tree(NT::PROGRAMA) {
     for (auto &l : table)
         std::fill_n(l, TABLE_COLUMNS, -1);
 
@@ -116,9 +116,8 @@ SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source), arv
     table[NT::FATOR][T::SUB] = 40;
 }
 
-void SyntacticAnalyzer::literalmenteQualquerCoisa() {
-    using clist = std::initializer_list<ArvoreConcreta::elem_type>;
-    print_stack<ArvoreConcreta::elem_type> stack;
+ConcreteTree SyntacticAnalyzer::get_concrete_derivation_tree() {
+    print_stack<ConcreteTree::elem_type> stack;
     stack.push(NT::PROGRAMA);
 
     auto [nextToken, row, col] = lexer.next_token();
@@ -127,24 +126,19 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
         auto X = stack.top();
 
         if (auto v = std::get_if<Token::Name>(&X)) {
-            stack.print();
-            std::cout << '\n' << std::endl;
             if (*v == nextToken.name) {
                 stack.pop();
                 std::tie(nextToken, row, col) = lexer.next_token();
             } else {
                 throw SyntacticException("Token esperado: " + Token::to_string(*v), nextToken, row, col);
             }
-        } else {
-            int nt = *std::get_if<int>(&X);
-            int prod = table[nt][static_cast<int>(nextToken.name)];
-            stack.print();
-            std::cout << "Producao: " << prod << '\n' << std::endl;
+        } else if (auto nt = std::get_if<int>(&X)) {
+            int prod = table[*nt][static_cast<int>(nextToken.name)];
             if (prod == -1)
                 throw SyntacticException("Producao inexistente.", nextToken, row, col);
 
             stack.pop();
-            clist children;
+            std::vector<ConcreteTree::elem_type> children;
             switch (prod) {
             case 1: {
                 children = {NT::BLOCO, Token::Name::PAR_END, Token::Name::PAR_START, Token::Name::ID,
@@ -261,19 +255,20 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
             default:
                 if (prod > 40)
                     throw std::logic_error("Producao inexistente.");
-                arvore.next_node()->set_children(std::initializer_list{ArvoreConcreta::epsilon_type()});
+                tree.next_node()->set_children(std::initializer_list{ConcreteTree::epsilon_type()});
                 break;
             }
 
             if (children.size() != 0) {
-                arvore.next_node()->set_children(std::ranges::reverse_view(children));
+                tree.next_node()->set_children(std::ranges::reverse_view(children));
                 for (auto child : children)
                     stack.push(child);
             }
-        }
+        } else
+            throw "aaaa";
     }
     if (nextToken.name != Token::Name::END_OF_FILE)
         throw SyntacticException("O fim do arquivo era esperado.", nextToken, row, col);
 
-    std::cout << arvore.to_string() << std::endl;
+    return tree;
 }

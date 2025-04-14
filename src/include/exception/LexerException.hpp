@@ -10,5 +10,5 @@ class LexerException : public std::runtime_error {
 
     LexerException(const std::string &what, unsigned long row, unsigned long col, signed char c);
 
-    const char *what() const noexcept override;
+    [[nodiscard]] const char *what() const noexcept override;
 };
