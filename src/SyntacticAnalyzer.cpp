@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <ranges>
 #include <stack>
 #include <variant>
 
@@ -10,17 +11,18 @@ template <typename Tp, typename Sequence = std::deque<Tp>> struct print_stack : 
     void print() const {
         std::cout << "Stack: ";
         for (const auto &s : this->c) {
-            if (const auto v = std::get_if<Token::Name>(&s)) {
-                std::cout << Token::to_string(*v) << "; ";
-            } else {
-                std::cout << *std::get_if<int>(&s) + 2 << "; ";
-            }
+            if (const auto name = std::get_if<Token::Name>(&s))
+                std::cout << Token::to_string(*name) << "; ";
+            else if (const auto nt = std::get_if<int>(&s))
+                std::cout << *nt + 2 << "; ";
+            else if (const auto e = std::get_if<ArvoreConcreta::epsilon_type>(&s))
+                std::cout << "epsilon; ";
         }
         std::cout << std::endl;
     }
 };
 
-SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source) {
+SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source), arvore(NT::PROGRAMA) {
     for (auto &l : table)
         std::fill_n(l, TABLE_COLUMNS, -1);
 
@@ -115,7 +117,8 @@ SyntacticAnalyzer::SyntacticAnalyzer(std::ifstream &source) : lexer(source) {
 }
 
 void SyntacticAnalyzer::literalmenteQualquerCoisa() {
-    print_stack<std::variant<Token::Name, int>> stack;
+    using clist = std::initializer_list<ArvoreConcreta::elem_type>;
+    print_stack<ArvoreConcreta::elem_type> stack;
     stack.push(NT::PROGRAMA);
 
     auto [nextToken, row, col] = lexer.next_token();
@@ -140,176 +143,137 @@ void SyntacticAnalyzer::literalmenteQualquerCoisa() {
             if (prod == -1)
                 throw SyntacticException("Producao inexistente.", nextToken, row, col);
 
-            // figurativamenteQualquerCoisa(a);
             stack.pop();
+            clist children;
             switch (prod) {
-            case 1:
-                stack.emplace(NT::BLOCO);
-                stack.emplace(Token::Name::PAR_END);
-                stack.emplace(Token::Name::PAR_START);
-                stack.emplace(Token::Name::ID);
-                stack.emplace(Token::Name::PROGRAMA);
+            case 1: {
+                children = {NT::BLOCO, Token::Name::PAR_END, Token::Name::PAR_START, Token::Name::ID,
+                            Token::Name::PROGRAMA};
                 break;
-            case 2:
-                stack.emplace(Token::Name::BLOCO_END);
-                stack.emplace(NT::COMANDOS);
-                stack.emplace(NT::DECLARACOES);
-                stack.emplace(Token::Name::BLOCO_START);
+            }
+            case 2: {
+                children = {Token::Name::BLOCO_END, NT::COMANDOS, NT::DECLARACOES, Token::Name::BLOCO_START};
                 break;
-            case 3:
-                stack.emplace(NT::DECLARACOES);
-                stack.emplace(NT::DECLARACAO);
+            }
+            case 3: {
+                children = {NT::DECLARACOES, NT::DECLARACAO};
                 break;
-            case 5:
-                stack.emplace(Token::Name::END_SENTENCE);
-                stack.emplace(NT::IDS);
-                stack.emplace(Token::Name::COLON);
-                stack.emplace(Token::Name::TYPE);
+            }
+            case 5: {
+                children = {Token::Name::END_SENTENCE, NT::IDS, Token::Name::COLON, Token::Name::TYPE};
                 break;
-            case 6:
-                stack.emplace(NT::LISTA_IDS);
-                stack.emplace(Token::Name::ID);
+            }
+            case 6: {
+                children = {NT::LISTA_IDS, Token::Name::ID};
                 break;
-            case 7:
-                stack.emplace(NT::LISTA_IDS);
-                stack.emplace(Token::Name::ID);
-                stack.emplace(Token::Name::COMMA);
+            }
+            case 7: {
+                children = {NT::LISTA_IDS, Token::Name::ID, Token::Name::COMMA};
                 break;
-            case 9:
-                stack.emplace(NT::COMANDOS_OPT);
-                stack.emplace(NT::COMANDO);
+            }
+            case 9: {
+                children = {NT::COMANDOS_OPT, NT::COMANDO};
                 break;
+            }
             case 10:
-                stack.emplace(NT::COMANDOS);
+                children = {NT::COMANDOS};
                 break;
             case 12:
-                stack.emplace(NT::CMD_ATRIBUICAO);
+                children = {NT::CMD_ATRIBUICAO};
                 break;
             case 13:
-                stack.emplace(NT::CMD_SELECAO);
+                children = {NT::CMD_SELECAO};
                 break;
             case 14:
-                stack.emplace(NT::CMD_REPETICAO);
+                children = {NT::CMD_REPETICAO};
                 break;
             case 15:
-                stack.emplace(Token::Name::END_SENTENCE);
-                stack.emplace(NT::EXPRESSAO);
-                stack.emplace(Token::Name::ATTRIBUTION);
-                stack.emplace(Token::Name::ID);
+                children = {Token::Name::END_SENTENCE, NT::EXPRESSAO, Token::Name::ATTRIBUTION, Token::Name::ID};
                 break;
             case 16:
-                stack.emplace(NT::CMD_ELSE_OPT);
-                stack.emplace(NT::CMD_OU_BLOCO);
-                stack.emplace(Token::Name::THEN);
-                stack.emplace(Token::Name::BRACKET_END);
-                stack.emplace(NT::CONDICAO);
-                stack.emplace(Token::Name::BRACKET_START);
-                stack.emplace(Token::Name::IF);
+                children = {NT::CMD_ELSE_OPT, NT::CMD_OU_BLOCO,           Token::Name::THEN, Token::Name::BRACKET_END,
+                            NT::CONDICAO,     Token::Name::BRACKET_START, Token::Name::IF};
                 break;
             case 17:
-                stack.emplace(NT::CMD_ELSE_OPT);
-                stack.emplace(NT::CMD_OU_BLOCO);
-                stack.emplace(Token::Name::THEN);
-                stack.emplace(Token::Name::BRACKET_END);
-                stack.emplace(NT::CONDICAO);
-                stack.emplace(Token::Name::BRACKET_START);
-                stack.emplace(Token::Name::ELSEIF);
+                children = {NT::CMD_ELSE_OPT, NT::CMD_OU_BLOCO,           Token::Name::THEN,  Token::Name::BRACKET_END,
+                            NT::CONDICAO,     Token::Name::BRACKET_START, Token::Name::ELSEIF};
                 break;
             case 18:
-                stack.emplace(NT::CMD_OU_BLOCO);
-                stack.emplace(Token::Name::ELSE);
+                children = {NT::CMD_OU_BLOCO, Token::Name::ELSE};
                 break;
             case 20:
-                stack.emplace(NT::CMD_OU_BLOCO);
-                stack.emplace(Token::Name::DO);
-                stack.emplace(Token::Name::BRACKET_END);
-                stack.emplace(NT::CONDICAO);
-                stack.emplace(Token::Name::BRACKET_START);
-                stack.emplace(Token::Name::WHILE);
+                children = {NT::CMD_OU_BLOCO,           Token::Name::DO,   Token::Name::BRACKET_END, NT::CONDICAO,
+                            Token::Name::BRACKET_START, Token::Name::WHILE};
                 break;
             case 21:
-                stack.emplace(Token::Name::END_SENTENCE);
-                stack.emplace(Token::Name::BRACKET_END);
-                stack.emplace(NT::CONDICAO);
-                stack.emplace(Token::Name::BRACKET_START);
-                stack.emplace(Token::Name::WHILE);
-                stack.emplace(NT::CMD_OU_BLOCO);
-                stack.emplace(Token::Name::DO);
+                children = {
+                    Token::Name::END_SENTENCE, Token::Name::BRACKET_END, NT::CONDICAO,   Token::Name::BRACKET_START,
+                    Token::Name::WHILE,        NT::CMD_OU_BLOCO,         Token::Name::DO};
                 break;
             case 22:
-                stack.emplace(NT::COMANDO);
+                children = {NT::COMANDO};
                 break;
             case 23:
-                stack.emplace(NT::BLOCO);
+                children = {NT::BLOCO};
                 break;
             case 24:
-                stack.emplace(NT::EXPRESSAO);
-                stack.emplace(Token::Name::RELOP);
-                stack.emplace(NT::EXPRESSAO);
+                children = {NT::EXPRESSAO, Token::Name::RELOP, NT::EXPRESSAO};
                 break;
             case 25:
-                stack.emplace(NT::EXPRESSAO_PRIME);
-                stack.emplace(NT::TERMO);
+                children = {NT::EXPRESSAO_PRIME, NT::TERMO};
                 break;
             case 26:
-                stack.emplace(NT::EXPRESSAO_PRIME);
-                stack.emplace(NT::TERMO);
-                stack.emplace(Token::Name::SUM);
+                children = {NT::EXPRESSAO_PRIME, NT::TERMO, Token::Name::SUM};
                 break;
             case 27:
-                stack.emplace(NT::EXPRESSAO_PRIME);
-                stack.emplace(NT::TERMO);
-                stack.emplace(Token::Name::SUB);
+                children = {NT::EXPRESSAO_PRIME, NT::TERMO, Token::Name::SUB};
                 break;
             case 29:
-                stack.emplace(NT::TERMO_PRIME);
-                stack.emplace(NT::POTENCIA);
+                children = {NT::TERMO_PRIME, NT::POTENCIA};
                 break;
             case 30:
-                stack.emplace(NT::TERMO_PRIME);
-                stack.emplace(NT::POTENCIA);
-                stack.emplace(Token::Name::MUL);
+                children = {NT::TERMO_PRIME, NT::POTENCIA, Token::Name::MUL};
                 break;
             case 31:
-                stack.emplace(NT::TERMO_PRIME);
-                stack.emplace(NT::POTENCIA);
-                stack.emplace(Token::Name::DIV);
+                children = {NT::TERMO_PRIME, NT::POTENCIA, Token::Name::DIV};
                 break;
             case 33:
-                stack.emplace(NT::POTENCIA_PRIME);
-                stack.emplace(NT::FATOR);
+                children = {NT::POTENCIA_PRIME, NT::FATOR};
                 break;
             case 34:
-                stack.emplace(NT::POTENCIA_PRIME);
-                stack.emplace(NT::FATOR);
-                stack.emplace(Token::Name::POW);
+                children = {NT::POTENCIA_PRIME, NT::FATOR, Token::Name::POW};
                 break;
             case 36:
-                stack.emplace(Token::Name::PAR_END);
-                stack.emplace(NT::EXPRESSAO);
-                stack.emplace(Token::Name::PAR_START);
+                children = {Token::Name::PAR_END, NT::EXPRESSAO, Token::Name::PAR_START};
                 break;
             case 37:
-                stack.emplace(Token::Name::ID);
+                children = {Token::Name::ID};
                 break;
             case 38:
-                stack.emplace(Token::Name::CONST);
+                children = {Token::Name::CONST};
                 break;
             case 39:
-                stack.emplace(NT::FATOR);
-                stack.emplace(Token::Name::SUM);
+                children = {NT::FATOR, Token::Name::SUM};
                 break;
             case 40:
-                stack.emplace(NT::FATOR);
-                stack.emplace(Token::Name::SUB);
+                children = {NT::FATOR, Token::Name::SUB};
                 break;
             default:
                 if (prod > 40)
                     throw std::logic_error("Producao inexistente.");
+                arvore.next_node()->set_children(std::initializer_list{ArvoreConcreta::epsilon_type()});
                 break;
+            }
+
+            if (children.size() != 0) {
+                arvore.next_node()->set_children(std::ranges::reverse_view(children));
+                for (auto child : children)
+                    stack.push(child);
             }
         }
     }
     if (nextToken.name != Token::Name::END_OF_FILE)
         throw SyntacticException("O fim do arquivo era esperado.", nextToken, row, col);
+
+    std::cout << arvore.to_string() << std::endl;
 }
