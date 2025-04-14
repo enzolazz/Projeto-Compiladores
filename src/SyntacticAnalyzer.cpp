@@ -255,7 +255,7 @@ ConcreteTree SyntacticAnalyzer::get_concrete_derivation_tree() {
             default:
                 if (prod > 40)
                     throw std::logic_error("Producao inexistente.");
-                tree.next_node()->set_children(std::initializer_list{ConcreteTree::epsilon_type()});
+                tree.next_node()->set_children(std::vector{ConcreteTree::epsilon_type()});
                 break;
             }
 
