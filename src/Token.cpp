@@ -108,6 +108,5 @@ std::string Token::to_string() const {
     else
         str += ", nao implementado";
 
-    // return str + ", row: " + std::to_string(row) + ", col: " + std::to_string(col) + ">";
     return str + ">";
 }

@@ -15,7 +15,7 @@ class SyntacticAnalyzer {
     ConcreteTree tree;
 
  public:
-    SyntacticAnalyzer(std::ifstream &source);
+    explicit SyntacticAnalyzer(std::ifstream &source);
     [[nodiscard]] ConcreteTree get_concrete_derivation_tree();
 
     struct T {

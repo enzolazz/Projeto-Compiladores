@@ -34,10 +34,8 @@ std::string ConcreteTree::to_string() const {
         if (node == nullptr)
             return "";
 
-        // Indentação para representar a hierarquia
         std::string result(depth * 2, ' ');
 
-        // Adiciona o valor do nó
         if (std::holds_alternative<epsilon_type>(node->value)) {
             result += "epsilon";
         } else if (const auto v = std::get_if<int>(&node->value)) {
