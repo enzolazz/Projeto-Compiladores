@@ -84,7 +84,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 4:
             look_ahead();
             token = Token(Token::Name::COLON, {});
-            current_state = -1;
             break;
         case 5:
             token = Token(Token::Name::ATTRIBUTION, {});
@@ -131,11 +130,9 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
             break;
         case 13:
             token = Token(Token::Name::BRACKET_END, {});
-            current_state = -1;
             break;
         case 14:
             token = Token(Token::Name::BRACKET_START, {});
-            current_state = -1;
             break;
         case 15:
             next_char();
@@ -165,11 +162,9 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
             break;
         case 18:
             token = Token(Token::Name::COMMA, {});
-            current_state = -1;
             break;
         case 19:
             token = Token(Token::Name::END_SENTENCE, {});
-            current_state = -1;
             break;
         case 20:
             next_char();
@@ -217,12 +212,10 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 26: {
             look_ahead();
             token = symbolTable.insert(Row(Token(Token::Name::CONST, {}), lexeme));
-            current_state = -1;
             break;
         }
         case 27:
             token = Token(Token::Name::DIV, {});
-            current_state = -1;
             break;
         case 28:
             next_char();
@@ -234,27 +227,21 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 29:
             look_ahead();
             token = Token(Token::Name::MUL, {});
-            current_state = -1;
             break;
         case 30:
             token = Token(Token::Name::POW, {});
-            current_state = -1;
             break;
         case 31:
             token = Token(Token::Name::SUM, {});
-            current_state = -1;
             break;
         case 32:
             token = Token(Token::Name::SUB, {});
-            current_state = -1;
             break;
         case 33:
             token = Token(Token::Name::PAR_END, {});
-            current_state = -1;
             break;
         case 34:
             token = Token(Token::Name::PAR_START, {});
-            current_state = -1;
             break;
         case 35:
             next_char();
@@ -272,16 +259,13 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
             break;
         case 36:
             token = Token(Token::Name::RELOP, Token::RelOp::NE);
-            current_state = -1;
             break;
         case 37:
             look_ahead();
             token = Token(Token::Name::RELOP, Token::RelOp::LT);
-            current_state = -1;
             break;
         case 38:
             token = Token(Token::Name::RELOP, Token::RelOp::LE);
-            current_state = -1;
             break;
         case 39:
             next_char();
@@ -296,7 +280,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
             break;
         case 41:
             token = Token(Token::Name::RELOP, Token::RelOp::GE);
-            current_state = -1;
             break;
         case 42:
             next_char();
@@ -315,7 +298,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 44:
             look_ahead();
             token = Token(Token::Name::DO, {});
-            current_state = -1;
             break;
         case 45:
             next_char();
@@ -350,7 +332,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 49:
             look_ahead();
             token = Token(Token::Name::ELSE, {});
-            current_state = -1;
             break;
         case 50:
             next_char();
@@ -369,7 +350,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 52:
             look_ahead();
             token = Token(Token::Name::ELSEIF, {});
-            current_state = -1;
             break;
         case 53:
             next_char();
@@ -390,7 +370,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 55:
             look_ahead();
             token = Token(Token::Name::IF, {});
-            current_state = -1;
             break;
         case 56:
             next_char();
@@ -448,7 +427,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 64:
             look_ahead();
             token = Token(Token::Name::TYPE, Token::Type::FLOAT);
-            current_state = -1;
             break;
         case 65:
             next_char();
@@ -481,7 +459,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 69:
             look_ahead();
             token = Token(Token::Name::TYPE, Token::Type::CHAR);
-            current_state = -1;
             break;
         case 70:
             next_char();
@@ -542,7 +519,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 78:
             look_ahead();
             token = Token(Token::Name::PROGRAMA, {});
-            current_state = -1;
             break;
         case 79:
             next_char();
@@ -575,7 +551,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 83:
             look_ahead();
             token = Token(Token::Name::THEN, {});
-            current_state = -1;
             break;
         case 84:
             next_char();
@@ -615,7 +590,6 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 89:
             look_ahead();
             token = Token(Token::Name::WHILE, {});
-            current_state = -1;
             break;
         case 90:
             next_char();
@@ -624,12 +598,10 @@ std::tuple<Token, unsigned long, unsigned long> Lexer::next_token() {
         case 91: {
             look_ahead();
             token = symbolTable.insert(Row(Token(Token::Name::ID, {}), lexeme));
-            current_state = -1;
             break;
         }
         case 92:
             token = Token(Token::Name::RELOP, Token::RelOp::EQ);
-            current_state = -1;
             break;
         case 93: {
             token = symbolTable.insert(Row(Token(Token::Name::CONST, {}), lexeme));
